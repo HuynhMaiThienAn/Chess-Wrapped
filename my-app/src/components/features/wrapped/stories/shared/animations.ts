@@ -1,4 +1,6 @@
-export const containerVariants = {
+import { Variants } from 'framer-motion';
+
+export const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
@@ -6,7 +8,7 @@ export const containerVariants = {
     }
 };
 
-export const itemVariants = {
+export const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
         opacity: 1,
@@ -15,8 +17,7 @@ export const itemVariants = {
     }
 };
 
-// Helper for the floating background icons
-export const floatVariant = (delay: number) => ({
+export const floatVariant = (delay: number): Variants => ({
     animate: {
         y: [0, -10, 0],
         rotate: [0, 5, -5, 0],
