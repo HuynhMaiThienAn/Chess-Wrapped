@@ -2,12 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { Users, Heart, Swords, Trophy } from 'lucide-react';
-import { UserData } from '@/types';
 import StoryCard from '@/components/ui/StoryCard';
 import { StoryHeader, StoryBackground, containerVariants, itemVariants, CONTAINERS } from '../shared';
 import PodiumAvatar from './PodiumAvatar';
+import { useChessStats } from '@/context/ChessContext';
 
-export default function FriendsSlide({ data }: { data: UserData }) {
+export default function FriendsSlide() {
+    const { stats: data } = useChessStats();
+
     const top3 = data.topFriends.slice(0, 3);
     const remaining = data.topFriends.slice(3);
 
@@ -36,43 +38,42 @@ export default function FriendsSlide({ data }: { data: UserData }) {
                 <StoryHeader
                     icon={<Users size={24}/>}
                     iconColor="text-[#81b64c]"
-                    title="Best Friends???"
-                    subtitle="Most Games Played Against"
+                    title="Best Friends :D"
                 />
 
                 {/* PODIUM SECTION (Ranks 2, 1, 3) */}
                 {top3.length > 0 && (
-                    <div className="w-full flex justify-center items-end h-[220px] mb-6 px-4 gap-1">
+                    <div className="w-full flex justify-center items-end h-[220px] mb-5 px-4 gap-1 -mt-4">
 
-                        {/* Rank 2 (Silver) */}
+                        {/* Rank 2 (Silver) - Width slightly reduced */}
                         {top3[1] && (
                             <PodiumAvatar
                                 friend={top3[1]}
                                 rank={2}
                                 color={SILVER}
-                                className="w-[30%] h-[150px] bg-[#3d3b38]/40"
+                                className="w-[29%] h-[150px] bg-[#3d3b38]/40" // Reduced w-[30%] to w-[29%]
                                 size={55}
                             />
                         )}
 
-                        {/* Rank 1 (Gold) */}
+                        {/* Rank 1 (Gold) - Width increased for primary focus */}
                         {top3[0] && (
                             <PodiumAvatar
                                 friend={top3[0]}
                                 rank={1}
                                 color={GOLD}
-                                className="w-[36%] h-[190px] bg-[#ffc800]/10 z-10 shadow-2xl pb-4"
+                                className="w-[38%] h-[190px] bg-[#ffc800]/10 z-10 shadow-2xl pb-4" // Increased w-[36%] to w-[38%]
                                 size={75}
                             />
                         )}
 
-                        {/* Rank 3 (Bronze) */}
+                        {/* Rank 3 (Bronze) - Width slightly reduced */}
                         {top3[2] && (
                             <PodiumAvatar
                                 friend={top3[2]}
                                 rank={3}
                                 color={BRONZE}
-                                className="w-[30%] h-[130px] bg-[#3d3b38]/40"
+                                className="w-[29%] h-[130px] bg-[#3d3b38]/40" // Reduced w-[30%] to w-[29%]
                                 size={45}
                             />
                         )}
@@ -98,7 +99,8 @@ export default function FriendsSlide({ data }: { data: UserData }) {
                                         onError={(e) => { (e.target as HTMLImageElement).src = "https://www.chess.com/bundles/web/images/user-image.svg"; }}
                                     />
 
-                                    <span className="text-white font-bold text-sm truncate max-w-[120px]">
+                                    {/* FIX: Increased max-w for name display */}
+                                    <span className="text-white font-bold text-sm truncate max-w-[150px]">
                                         {friend.username}
                                     </span>
                                 </div>

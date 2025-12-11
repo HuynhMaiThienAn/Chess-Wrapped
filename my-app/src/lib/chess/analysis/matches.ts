@@ -9,12 +9,10 @@ export function analyzeMatches(games: ChessGame[], username: string) {
         const user = isWhite ? game.white : game.black;
         const opponent = isWhite ? game.black : game.white;
 
-        // Check if user won
         if (user.result === 'win') {
             const eloGap = opponent.rating - user.rating;
 
-            // Threshold: Beating someone +100 Elo
-            if (eloGap >= 100) {
+            if (eloGap >= 0) {
                 impressiveMatches.push({
                     opponent: opponent.username,
                     opponentElo: opponent.rating,
@@ -22,13 +20,16 @@ export function analyzeMatches(games: ChessGame[], username: string) {
                     date: new Date(game.end_time * 1000).toLocaleDateString(),
                     url: game.url,
                     timeControl: game.time_class,
-                    opponentAvatarUrl: ''
+                    opponentAvatarUrl: null,
+                    // 👇 CAPTURE THE FEN DIRECTLY (No parsing needed)
+                    // If game.fen is missing, fallback to PGN, but prefer FEN
+                    fen: game.fen || game.initial_setup
                 });
             }
         }
     });
 
     return {
-        impressiveMatches: impressiveMatches.sort((a, b) => b.eloGap - a.eloGap).slice(0, 5)
+        impressiveMatches: impressiveMatches.sort((a, b) => b.eloGap - a.eloGap).slice(0, 3)
     };
 }

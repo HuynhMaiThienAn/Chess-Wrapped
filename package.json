@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "react-chessboard": "^5.8.6"
+  }
+}

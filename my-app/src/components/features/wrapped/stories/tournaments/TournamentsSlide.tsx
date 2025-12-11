@@ -2,12 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Target } from 'lucide-react';
-import { UserData } from '@/types';
 import StoryCard from '@/components/ui/StoryCard';
 import { StoryHeader, StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
 import TournamentRow from './TournamentRow';
+import { useChessStats } from '@/context/ChessContext'; // 👇 Import Hook
 
-export default function TournamentsSlide({ data }: { data: UserData }) {
+export default function TournamentsSlide() {
+    const { stats: data } = useChessStats(); // 👇 Use Context
+
     const summary = data.tournamentSummary || [];
 
     let comment = "Testing your mettle.";

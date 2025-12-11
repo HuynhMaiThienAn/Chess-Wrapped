@@ -30,6 +30,7 @@ export interface GameStats {
         url: string;
         timeControl: string;
         opponentAvatarUrl: string;
+        fen: string;
     }[];
 
     tournamentCount: number;

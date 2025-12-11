@@ -59,7 +59,7 @@ export function analyzeOpenings(games: ChessGame[], username: string) {
                 if (sortType === 'best') return b.count - a.count; // Most played
                 return a.winRate - b.winRate; // Lowest winrate first for 'worst'
             })
-            .slice(0, 5);
+            .slice(0, 1);
     };
 
     return {

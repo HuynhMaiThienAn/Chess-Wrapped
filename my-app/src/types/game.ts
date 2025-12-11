@@ -1,4 +1,6 @@
 export interface ChessGame {
+    initial_setup: string;
+    fen: string;
     url: string;
     pgn: string;
     time_control: string;

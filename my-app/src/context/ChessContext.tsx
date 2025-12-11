@@ -1,16 +1,15 @@
 'use client';
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import type { generateWrappedStats } from '@/lib/chess';
-export type WrappedData = Awaited<ReturnType<typeof generateWrappedStats>>;
+import { UserData } from '@/types'; // Use your shared type
 
 interface ChessContextType {
-    stats: WrappedData | null;
+    stats: UserData;
 }
 
 const ChessContext = createContext<ChessContextType | null>(null);
 
-export const ChessProvider: React.FC<{ children: ReactNode; stats: WrappedData }> = ({children, stats}) => {
+export const ChessProvider: React.FC<{ children: ReactNode; stats: UserData }> = ({ children, stats }) => {
     return (
         <ChessContext.Provider value={{ stats }}>
             {children}
@@ -20,6 +19,8 @@ export const ChessProvider: React.FC<{ children: ReactNode; stats: WrappedData }
 
 export const useChessStats = () => {
     const context = useContext(ChessContext);
-    if (!context) throw new Error("useChessStats should be used within ChessProvider"); // it should be
+    if (!context) {
+        throw new Error("useChessStats must be used within a ChessProvider");
+    }
     return context;
 };

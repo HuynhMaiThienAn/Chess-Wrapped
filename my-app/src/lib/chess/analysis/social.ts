@@ -16,7 +16,7 @@ export function analyzeFriends(games: ChessGame[], username: string) {
     // Convert to array and sort by games count
     const topFriends: FriendStats[] = Object.entries(friendsMap)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
+        .slice(0, 4)
         .map(([username, count]) => ({
             username,
             games: count,

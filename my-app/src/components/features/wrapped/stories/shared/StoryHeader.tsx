@@ -10,15 +10,21 @@ interface StoryHeaderProps {
     iconColor?: string;
 }
 
-export default function StoryHeader({ icon, title, subtitle, iconColor = 'text-white' }: StoryHeaderProps) {
+export default function StoryHeader({ icon, title, subtitle, iconColor = 'text-[#ffc800]' }: StoryHeaderProps) {
     return (
         <motion.div variants={itemVariants} className="flex flex-col items-center mb-6 z-20 relative">
-            <div className={CONTAINERS.iconWrapper}>
-                <div className={iconColor}>{icon}</div>
+
+            {/* Icon Bubble */}
+            <div className={`${CONTAINERS.iconWrapper} ${iconColor} border-4 border-white/10`}>
+                {icon}
             </div>
+
+            {/* Title */}
             <h2 className={TYPOGRAPHY.headerTitle}>
                 {title}
             </h2>
+
+            {/* Subtitle */}
             {subtitle && (
                 <div className={TYPOGRAPHY.subHeader}>
                     {subtitle}

@@ -3,11 +3,13 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock } from 'lucide-react';
-import { UserData } from '@/types';
 import StoryCard from '@/components/ui/StoryCard';
 import { StoryHeader, StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
+import { useChessStats } from '@/context/ChessContext'; // 👇 Import Hook
 
-export default function JoinDateSlide({ data }: { data: UserData }) {
+export default function JoinDateSlide() {
+    const { stats: data } = useChessStats(); // 👇 Use Context
+
     const { dateStr, daysMember } = useMemo(() => {
         const joinDateObj = new Date(data.joinDate * 1000);
         const now = new Date();
