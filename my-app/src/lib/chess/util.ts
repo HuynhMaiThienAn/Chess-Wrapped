@@ -4,11 +4,23 @@ export function parseUsernameFromUrl(url: string | undefined, fallback: string):
     return parts[parts.length - 1] || fallback;
 }
 
+// src/lib/chess/util.ts
+
 export function getPgnTag(pgn: string | undefined, tag: string): string | null {
     if (!pgn) return null;
-    // Fix: Removed extra escape on the closing bracket
-    const match = pgn.match(new RegExp(`\\[${tag}\\s+"([^"]+)"\\]`));
-    return match ? match[1] : null;
+
+    // String search instead of Regex
+    const tagKey = `[${tag} "`;
+    const startIndex = pgn.indexOf(tagKey);
+
+    if (startIndex === -1) return null;
+
+    const valueStart = startIndex + tagKey.length;
+    const valueEnd = pgn.indexOf('"]', valueStart);
+
+    if (valueEnd === -1) return null;
+
+    return pgn.substring(valueStart, valueEnd);
 }
 
 export function getOpeningFromPGN(pgn: string | undefined): string {

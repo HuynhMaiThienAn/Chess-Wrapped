@@ -21,9 +21,7 @@ export function analyzeMatches(games: ChessGame[], username: string) {
                     url: game.url,
                     timeControl: game.time_class,
                     opponentAvatarUrl: null,
-                    // 👇 CAPTURE THE FEN DIRECTLY (No parsing needed)
-                    // If game.fen is missing, fallback to PGN, but prefer FEN
-                    fen: game.fen || game.initial_setup
+                    fen: game.fen
                 });
             }
         }
