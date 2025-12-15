@@ -10,9 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-# should not expose this
-/.env.local
-
 # testing
 /coverage
 
