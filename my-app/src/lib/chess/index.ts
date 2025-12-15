@@ -4,12 +4,15 @@ import { analyzeElo } from './analysis/elo';
 import { analyzeOpenings } from './analysis/openings';
 import { analyzeFriends } from './analysis/social';
 import { analyzeMatches } from './analysis/matches';
+import { getAvatars } from './avatarService';
+
+const TARGET_YEAR = '2025';
 
 export async function generateWrappedStats(username: string) {
-    // Fetch Data
+    // Fetch Main Data
     const [profile, games] = await Promise.all([
         getUserProfile(username),
-        fetchUserGames(username, '2025')
+        fetchUserGames(username, TARGET_YEAR)
     ]);
 
     // Run Analysis
@@ -19,44 +22,20 @@ export async function generateWrappedStats(username: string) {
     const social = analyzeFriends(games, username);
     const matches = analyzeMatches(games, username);
 
-
-    // Collect all unique usernames needed
-    const usersToFetch = new Set<string>();
-    social.topFriends.forEach(f => usersToFetch.add(f.username));
-    matches.impressiveMatches.forEach(m => usersToFetch.add(m.opponent));
-
-    // Create a map of username -> avatarUrl
-    const avatarMap = new Map<string, string>();
-
-    await Promise.all(
-        Array.from(usersToFetch).map(async (user) => {
-            try {
-                const p = await getUserProfile(user);
-                avatarMap.set(user, p.avatarUrl);
-            } catch (e) {
-                console.warn(`Failed to fetch avatar for ${user}`);
-            }
-        })
+    // Populate Avatars
+    const { friendsWithAvatars, matchesWithAvatars } = await getAvatars(
+        social.topFriends,
+        matches.impressiveMatches
     );
-
-    const hydratedFriends = social.topFriends.map(f => ({
-        ...f,
-        avatarUrl: avatarMap.get(f.username) || 'https://www.chess.com/bundles/web/images/user-image.svg'
-    }));
-
-    const hydratedMatches = matches.impressiveMatches.map(m => ({
-        ...m,
-        opponentAvatarUrl: avatarMap.get(m.opponent) || 'https://www.chess.com/bundles/web/images/user-image.svg'
-    }));
 
     return {
         ...profile,
         ...general,
         ...elo,
         ...openings,
-        topFriends: hydratedFriends,
-        impressiveMatches: hydratedMatches,
+        topFriends: friendsWithAvatars,
+        impressiveMatches: matchesWithAvatars,
         tournamentCount: 0,
-        year: 2025
+        year: parseInt(TARGET_YEAR)
     };
 }
