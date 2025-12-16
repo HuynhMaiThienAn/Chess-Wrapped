@@ -14,7 +14,6 @@ import ImpressiveMatchesSlide from './stories/ImpressiveMatchesSlide';
 import WorstOpeningSlide from './stories/WorstOpeningSlide';
 import EndSlide from './stories/EndSlide';
 import TopOpeningSlide from './stories/topOpenings';
-import TournamentsSlide from './stories/tournaments';
 import FriendsSlide from './stories/friends';
 
 export default function Carousel() {
@@ -43,7 +42,6 @@ export default function Carousel() {
         { id: 'elo', component: <EloGraphSlide /> },
         { id: 'op_top', component: <TopOpeningSlide /> },
         { id: 'op_worst', component: <WorstOpeningSlide />, condition: () => (data.worstOpeningsWhite.length > 0 || data.worstOpeningsBlack.length > 0) },
-        { id: 'tourney', component: <TournamentsSlide />, condition: () => data.tournamentCount > 0 },
         { id: 'friends', component: <FriendsSlide /> },
         { id: 'impressive', component: <ImpressiveMatchesSlide />, condition: () => data.impressiveMatches.length > 0 },
         { id: 'end', component: <EndSlide onReset={() => window.location.reload()} /> },
