@@ -1,101 +1,155 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Skull, AlertTriangle, XCircle, ShieldAlert } from 'lucide-react';
-import { OpeningStat } from '@/types';
+import { AlertTriangle, TrendingDown, ShieldAlert } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
 import StoryCard from '@/components/ui/StoryCard';
-import { StoryHeader, StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
+import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
 import { useChessStats } from '@/context/ChessContext';
 
-// 👇 Helper: Compact Row for a single opening (Applied Chunky Style)
-const WorstOpeningRow = ({ op }: { op: OpeningStat }) => (
-    <motion.div
-        variants={itemVariants}
-        // Updated styling: Increased rounding, primary dark background, and chunky red shadow
-        className="p-3 bg-[#262421] rounded-xl border-2 border-[#302e2b] flex flex-col justify-center shadow-[0_4px_0_#990000] hover:translate-y-0.5 hover:shadow-none transition-all mb-2 min-h-[60px]"
+const COLORS = ['#ca3431', '#d64a31', '#e06531', '#ea7e31', '#989795'];
 
-    >
-        {/* Name: Full text, wrapping allowed */}
-        <div className="text-white text-xs font-bold leading-tight text-left break-words whitespace-normal mb-1">
-            {op.name}
-        </div>
-        {/* Stats */}
-        <div className="flex justify-between items-center text-[10px] text-[#989795] font-mono">
-            <span>{op.count} games</span>
+// Helper to auto-scale text (Same as Opening Slide)
+const AutoFitText = ({ text }: { text: string }) => {
+    const textRef = useRef<HTMLSpanElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
+
+    useEffect(() => {
+        const resizeText = () => {
+            const container = containerRef.current;
+            const txt = textRef.current;
+            if (!container || !txt) return;
+
+            txt.style.transform = 'scale(1)';
+            const containerWidth = container.clientWidth;
+            const textWidth = txt.scrollWidth;
+
+            if (textWidth > containerWidth) {
+                setScale(containerWidth / textWidth);
+            } else {
+                setScale(1);
+            }
+        };
+
+        resizeText();
+        window.addEventListener('resize', resizeText);
+        return () => window.removeEventListener('resize', resizeText);
+    }, [text]);
+
+    return (
+        <div ref={containerRef} className="w-full overflow-hidden flex items-center">
             <span
-                // Updated WR badge style to be more prominent and chunky
-                className="text-red-400 font-bold bg-[#302e2b] border border-red-500/50 px-2 py-0.5 rounded-md shadow-inner"
+                ref={textRef}
+                className="text-white text-xs font-bold whitespace-nowrap origin-left transition-transform duration-200"
+                style={{ transform: `scale(${scale})` }}
             >
-                {op.winRate}% WR
+                {text}
             </span>
         </div>
-    </motion.div>
-);
-
-// 👇 Helper: Column List (Applied Chunky Style)
-const WorstOpeningList = ({ title, list }: { title: string, list: OpeningStat[] }) => (
-    <div className="flex-1 min-w-0 flex flex-col">
-        <div
-            // Updated header style: Larger font, thicker border, more rounding
-            className="text-xs font-bold uppercase tracking-widest mb-3 text-center bg-[#211f1c] py-2 rounded-lg border-2 border-red-900/50 text-red-400 shadow-[0_2px_0_#262421]"
-        >
-            {title}
-        </div>
-        <div className="flex flex-col">
-            {list.map((op) => (
-                <WorstOpeningRow key={op.name} op={op} />
-            ))}
-            {list.length === 0 && (
-                <div className="text-[#3e3c39] text-xs italic p-2 text-center">
-                    No data found.
-                </div>
-            )}
-        </div>
-    </div>
-);
+    );
+};
 
 export default function WorstOpeningSlide() {
     const { stats: data } = useChessStats();
 
-    // Get top 3 worst for each color
-    const worstWhite = data.worstOpeningsWhite.slice(0, 3);
-    const worstBlack = data.worstOpeningsBlack.slice(0, 3);
+    // 1. Merge White & Black Worst Openings
+    const allWorst = [
+        ...data.worstOpeningsWhite,
+        ...data.worstOpeningsBlack
+    ];
 
-    if (worstWhite.length === 0 && worstBlack.length === 0) return null;
+    // 2. Sort by Win Rate (Ascending: Lowest WR is "Worst")
+    // If Win Rates are equal, prioritize ones with MORE games (higher count)
+    allWorst.sort((a, b) => {
+        if (a.winRate === b.winRate) return b.count - a.count;
+        return a.winRate - b.winRate;
+    });
+
+    // 3. Take Top 5
+    const top5Worst = allWorst.slice(0, 6);
+
+    // 4. Prepare Chart Data
+    // For "Worst" Openings, the Bar Width represents WIN RATE.
+    // A small bar = Low Win Rate (Bad).
+    const chartData = top5Worst.map(op => ({
+        name: op.name,
+        count: op.count,
+        winRate: op.winRate
+    }));
+
+    const worstName = top5Worst.length > 0 ? top5Worst[0].name : "None";
 
     return (
         <StoryCard id="slide-worst" className={CONTAINERS.slideCard}>
-
-            {/* Background Layer */}
             <StoryBackground>
-                <div className="absolute top-10 right-10 text-red-500 opacity-10 animate-float" style={{ animationDelay: '0s' }}><Skull size={80} /></div>
-                <div className="absolute bottom-10 left-10 text-red-500 opacity-10 animate-float" style={{ animationDelay: '2s' }}><ShieldAlert size={60} /></div>
-                <div className="absolute top-1/2 left-4 text-red-500 opacity-10 animate-float" style={{ animationDelay: '4s' }}><XCircle size={40} /></div>
+                <div className="absolute top-10 right-10 text-red-500 opacity-5"><AlertTriangle size={60} /></div>
+                <div className="absolute bottom-10 left-10 text-red-500 opacity-5"><ShieldAlert size={50} /></div>
             </StoryBackground>
 
-            {/* Content Layer */}
-            <motion.div
-                className={CONTAINERS.slideContainer}
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-            >
-                <StoryHeader
-                    icon={<AlertTriangle size={24}/>}
-                    iconColor="text-red-500" // Use a strong red accent
-                    title="Openings you struggled against"
-                />
+            <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
-                {/* 2-Column Layout (Updated Divider and Spacing) */}
-                <div className="w-full flex gap-3 text-left items-stretch px-4 mt-2 z-10"> {/* Increased px-2 to px-4 */}
-                    <WorstOpeningList title="AS WHITE" list={worstWhite} />
+                {/* Header: Avatar + Title */}
+                <motion.div variants={itemVariants} className="w-full flex justify-start items-center px-4 mb-4 z-10">
+                    <div className=" bg-white rounded-full shadow-lg mr-3">
+                        <img
+                            src={data.avatarUrl}
+                            alt={data.username}
+                            className="w-12 h-12 rounded-full object-cover border-4 border-[#81b64c]"
+                        />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white drop-shadow-md">
+                        Tough Battles
+                    </h2>
+                </motion.div>
 
-                    {/* Vertical Divider: Made bolder to match theme */}
-                    <div className="w-1 bg-[#3e3c39] opacity-70 my-1"></div>
+                {/* Horizontal Bar Graph */}
+                <motion.div
+                    variants={itemVariants}
+                    className="w-full px-6 flex flex-col gap-4 z-10 mb-2 overflow-y-auto max-h-[350px] custom-scrollbar"
+                >
+                    {chartData.map((item, idx) => {
+                        // Bar Width = Win Rate.
+                        // If WR is 0, give it 5% so it's visible.
+                        let relativeWidth = Math.max(item.winRate, 5);
 
-                    <WorstOpeningList title="AS BLACK" list={worstBlack} />
-                </div>
+                        return (
+                            <div key={idx} className="w-full">
+                                <div className="flex justify-between items-end mb-1 w-full">
+                                    <div className="flex-1 min-w-0 mr-2">
+                                        <AutoFitText text={item.name} />
+                                    </div>
+                                    <span className="text-[#989795] text-[10px] font-mono whitespace-nowrap shrink-0">
+                                        {item.count} games <span className="text-red-400 font-bold">({item.winRate}%)</span>
+                                    </span>
+                                </div>
+                                <div className="w-full h-3 bg-[#262421] rounded-full overflow-hidden border border-[#3e3c39]">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${relativeWidth}%` }}
+                                        transition={{ duration: 1, delay: 0.2 + (idx * 0.1), ease: "easeOut" }}
+                                        className="h-full rounded-full"
+                                        style={{ backgroundColor: COLORS[idx % COLORS.length] }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
 
+                    {chartData.length === 0 && (
+                        <div className="text-center text-[#989795] italic py-10">
+                            No significant data found.
+                        </div>
+                    )}
+                </motion.div>
+
+                {/* Footer Comment */}
+                <motion.div variants={itemVariants} className="z-10 px-4 mt-auto mb-2">
+                    <div className={TYPOGRAPHY.comment}>
+                        <TrendingDown size={18} className="inline mr-2 -mt-1 text-red-400" />
+                        "Learn how to deal with these lines now :D"
+                    </div>
+                </motion.div>
 
             </motion.div>
         </StoryCard>
