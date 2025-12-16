@@ -25,7 +25,7 @@ export async function generateWrappedStats(username: string) {
     // Populate Avatars
     const { friendsWithAvatars, matchesWithAvatars } = await getAvatars(
         social.topFriends,
-        matches.impressiveMatches
+        matches
     );
 
     return {

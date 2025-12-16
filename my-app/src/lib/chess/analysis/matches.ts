@@ -1,33 +1,50 @@
 import { ChessGame } from '@/types';
 
 export function analyzeMatches(games: ChessGame[], username: string) {
-    const impressiveMatches: any[] = [];
-    const lowerUsername = username.toLowerCase();
+    // 1. Deduplication Set
+    const seenUrls = new Set<string>();
 
-    games.forEach(game => {
-        const isWhite = game.white.username.toLowerCase() === lowerUsername;
-        const user = isWhite ? game.white : game.black;
-        const opponent = isWhite ? game.black : game.white;
+    const candidates = games.filter(game => {
+        // A. Check for duplicates immediately
+        if (seenUrls.has(game.url)) return false;
+        seenUrls.add(game.url);
 
-        if (user.result === 'win') {
-            const eloGap = opponent.rating - user.rating;
+        const isWhite = game.white.username.toLowerCase() === username.toLowerCase();
+        const userSide = isWhite ? game.white : game.black;
+        const opponentSide = isWhite ? game.black : game.white;
 
-            if (eloGap >= 0) {
-                impressiveMatches.push({
-                    opponent: opponent.username,
-                    opponentElo: opponent.rating,
-                    eloGap,
-                    date: new Date(game.end_time * 1000).toLocaleDateString(),
-                    url: game.url,
-                    timeControl: game.time_class,
-                    opponentAvatarUrl: null,
-                    fen: game.fen
-                });
-            }
-        }
+        // B. Must be a Win
+        if (userSide.result !== 'win') return false;
+
+        // C. No Bot matches
+        if (opponentSide.username.toLowerCase().includes('bot')) return false;
+
+        // D. Check Move Count > 10 (Avoids early aborts)
+        const moveCount = (game.pgn.match(/\d+\./g) || []).length;
+        if (moveCount <= 10) return false;
+
+        return true;
     });
 
-    return {
-        impressiveMatches: impressiveMatches.sort((a, b) => b.eloGap - a.eloGap).slice(0, 3)
-    };
+    // 2. Map & Calculate Elo Gap
+    const mapped = candidates.map(game => {
+        const isWhite = game.white.username.toLowerCase() === username.toLowerCase();
+        const userRating = isWhite ? game.white.rating : game.black.rating;
+        const oppRating = isWhite ? game.black.rating : game.white.rating;
+        const opponent = isWhite ? game.black : game.white;
+
+        return {
+            opponent: opponent.username,
+            opponentElo: oppRating,
+            eloGap: oppRating - userRating, // Positive = Upset
+            date: new Date(game.end_time * 1000).toLocaleDateString(),
+            url: game.url,
+            timeControl: game.time_class,
+            opponentAvatarUrl: '', // Will be filled by avatarService later
+            fen: game.fen
+        };
+    });
+
+    // 3. Sort by Elo Gap (Descending) and take Top 5
+    return mapped.sort((a, b) => b.eloGap - a.eloGap).slice(0, 5);
 }
