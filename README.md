@@ -3,9 +3,9 @@ https://chesswrap.vercel.app/
 
 **A "Spotify Wrapped" style experience for Chess.com users, built with Next.js and the Chess.com Public API.**
 
-![ChessWrapped Preview](my-app/public/app-images/homepage.png)
-![ChessWrapped Preview](my-app/public/app-images/how-it-work.png)
-![ChessWrapped Preview](my-app/public/app-images/key-features.png)
+![ChessWrapped Preview](my-app/public/app-image/homepage.png)
+![ChessWrapped Preview](my-app/public/app-image/how-it-work.png)
+![ChessWrapped Preview](my-app/public/app-image/key-features.png)
 
 
 ## 🛠️ Tech Stack
