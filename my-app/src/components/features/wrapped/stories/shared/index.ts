@@ -3,3 +3,4 @@ export { default as StoryBackground } from './StoryBackground';
 
 export * from './animations';
 export * from './styles';
+export * from './effects';

@@ -53,6 +53,40 @@ export interface GameStats {
 
     tournamentCount: number;
     tournamentSummary?: TournamentStats[];
+
+    // Accuracy
+    averageAccuracy?: Record<string, number>;
+    bestAccuracyGame?: {
+        accuracy: number;
+        timeControl: string;
+        date: string;
+        url: string;
+    } | null;
+    worstAccuracyGame?: {
+        accuracy: number;
+        timeControl: string;
+        date: string;
+        url: string;
+    } | null;
+    accuracyHistory?: {
+        date: string;
+        monthIndex: number;
+        accuracy: number;
+    }[];
+    bestTimeControl?: string | null;
+
+    // Time Control Breakdown
+    timeControlBreakdown?: {
+        timeControl: string;
+        games: number;
+        wins: number;
+        losses: number;
+        draws: number;
+        winRate: number;
+        averageElo: number;
+        peakElo: number;
+        averageGameDuration: number; // in seconds
+    }[];
 }
 
 export interface OpeningStat {

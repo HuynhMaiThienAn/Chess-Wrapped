@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Users, Heart, Swords, Trophy, Crown } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
+import { StoryBackground, containerVariants, itemVariants, staggerItemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
 import { useChessStats } from '@/context/ChessContext';
 
 // 👇 Helper: Auto-Scales text to fit container width
@@ -181,17 +181,23 @@ export default function FriendsSlide() {
                         {remaining.map((friend, idx) => (
                             <motion.div
                                 key={friend.username}
-                                variants={itemVariants}
-                                className="flex justify-between items-center bg-[#262421] p-2.5 rounded-xl border border-[#3e3c39] shadow-sm"
+                                custom={idx}
+                                variants={staggerItemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                whileHover={{ scale: 1.02, x: 5 }}
+                                className="flex justify-between items-center bg-[#262421] p-2.5 rounded-xl border border-[#3e3c39] shadow-sm transition-all cursor-pointer"
                             >
                                 <div className="flex items-center gap-3 w-[70%]">
                                     <span className="text-[#989795] font-black text-xs w-5 text-center shrink-0">#{idx + 4}</span>
 
-                                    <img
+                                    <motion.img
                                         src={friend.avatarUrl}
                                         alt={friend.username}
                                         className="w-8 h-8 rounded-full border border-[#3e3c39] object-cover bg-black/20 shrink-0"
                                         onError={(e) => { (e.target as HTMLImageElement).src = "https://www.chess.com/bundles/web/images/user-image.svg"; }}
+                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
                                     />
 
                                     {/* Name with scaling */}

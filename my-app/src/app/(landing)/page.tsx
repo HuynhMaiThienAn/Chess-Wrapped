@@ -111,13 +111,74 @@ export default function LandingPage() {
                 />
 
                 {/* --- FLOATING CHESS ICONS --- */}
-                {/* (Kept exactly as before) */}
-                <motion.div animate={{ y: [-10, 10, -10], rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-[10%] left-[10%] text-[#ffc800] drop-shadow-md z-0"><ChessKing size={80} strokeWidth={3} /></motion.div>
-                <motion.div animate={{ y: [10, -10, 10], rotate: [0, -5, 5, 0] }} transition={{ duration: 5, repeat: Infinity, delay: 1 }} className="absolute bottom-[15%] right-[10%] text-white drop-shadow-md z-0"><ChessRook size={70} strokeWidth={3} /></motion.div>
-                <motion.div animate={{ scale: [1, 1.1, 1], rotate: [10, 0, 10] }} transition={{ duration: 6, repeat: Infinity, delay: 2 }} className="absolute top-[20%] right-[15%] text-[#302e2b] opacity-20 drop-shadow-md z-0"><ChessKnight size={60} strokeWidth={3} /></motion.div>
-                <motion.div animate={{ y: [-15, 15, -15], rotate: [0, -5, 5, 0] }} transition={{ duration: 7, repeat: Infinity, delay: 2.5 }} className="absolute bottom-[5%] left-[5%] text-[#ffc800] opacity-60 drop-shadow-md z-0"><ChessQueen size={60} strokeWidth={3} /></motion.div>
-                <motion.div animate={{ x: [5, -5, 5], rotate: [10, -10, 10] }} transition={{ duration: 6, repeat: Infinity, delay: 3.5 }} className="absolute top-[40%] left-[5%] text-white opacity-50 drop-shadow-md z-0"><ChessBishop size={50} strokeWidth={3} /></motion.div>
-                <motion.div animate={{ rotate: [0, 180, 0] }} transition={{ duration: 10, repeat: Infinity, delay: 4.5 }} className="absolute bottom-[5%] left-[45%] text-[#302e2b] opacity-20 drop-shadow-md z-0"><ChessPawn size={40} strokeWidth={3} /></motion.div>
+                <motion.div 
+                    animate={{ 
+                        y: [-10, 10, -10], 
+                        rotate: [0, 5, -5, 0],
+                        scale: [1, 1.05, 1]
+                    }} 
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+                    className="absolute top-[10%] left-[10%] text-[#ffc800] drop-shadow-md z-0"
+                    whileHover={{ scale: 1.2, rotate: 10 }}
+                >
+                    <ChessKing size={80} strokeWidth={3} />
+                </motion.div>
+                <motion.div 
+                    animate={{ 
+                        y: [10, -10, 10], 
+                        rotate: [0, -5, 5, 0],
+                        scale: [1, 1.05, 1]
+                    }} 
+                    transition={{ duration: 5, repeat: Infinity, delay: 1, ease: "easeInOut" }} 
+                    className="absolute bottom-[15%] right-[10%] text-white drop-shadow-md z-0"
+                    whileHover={{ scale: 1.2, rotate: -10 }}
+                >
+                    <ChessRook size={70} strokeWidth={3} />
+                </motion.div>
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.1, 1], 
+                        rotate: [10, 0, 10],
+                        opacity: [0.2, 0.3, 0.2]
+                    }} 
+                    transition={{ duration: 6, repeat: Infinity, delay: 2, ease: "easeInOut" }} 
+                    className="absolute top-[20%] right-[15%] text-[#302e2b] drop-shadow-md z-0"
+                >
+                    <ChessKnight size={60} strokeWidth={3} />
+                </motion.div>
+                <motion.div 
+                    animate={{ 
+                        y: [-15, 15, -15], 
+                        rotate: [0, -5, 5, 0],
+                        scale: [1, 1.05, 1]
+                    }} 
+                    transition={{ duration: 7, repeat: Infinity, delay: 2.5, ease: "easeInOut" }} 
+                    className="absolute bottom-[5%] left-[5%] text-[#ffc800] opacity-60 drop-shadow-md z-0"
+                    whileHover={{ scale: 1.2, rotate: -10 }}
+                >
+                    <ChessQueen size={60} strokeWidth={3} />
+                </motion.div>
+                <motion.div 
+                    animate={{ 
+                        x: [5, -5, 5], 
+                        rotate: [10, -10, 10],
+                        scale: [1, 1.05, 1]
+                    }} 
+                    transition={{ duration: 6, repeat: Infinity, delay: 3.5, ease: "easeInOut" }} 
+                    className="absolute top-[40%] left-[5%] text-white opacity-50 drop-shadow-md z-0"
+                >
+                    <ChessBishop size={50} strokeWidth={3} />
+                </motion.div>
+                <motion.div 
+                    animate={{ 
+                        rotate: [0, 180, 0],
+                        scale: [1, 1.1, 1]
+                    }} 
+                    transition={{ duration: 10, repeat: Infinity, delay: 4.5, ease: "easeInOut" }} 
+                    className="absolute bottom-[5%] left-[45%] text-[#302e2b] opacity-20 drop-shadow-md z-0"
+                >
+                    <ChessPawn size={40} strokeWidth={3} />
+                </motion.div>
 
 
                 {/* MAIN INPUT CARD */}
@@ -177,12 +238,27 @@ export default function LandingPage() {
                                                 initial={{ y: 20, opacity: 0 }}
                                                 animate={{ y: 0, opacity: 1 }}
                                                 exit={{ y: 20, opacity: 0 }}
-                                                whileHover={{ scale: 1.05 }}
+                                                whileHover={{ 
+                                                    scale: 1.05,
+                                                    boxShadow: "0 8px 20px rgba(129, 182, 76, 0.4)"
+                                                }}
                                                 whileTap={{ scale: 0.95 }}
                                                 type="submit"
-                                                className="bg-[#81b64c] hover:bg-[#72a341] text-white text-xl font-bold px-8 py-3 rounded-full shadow-[0_6px_0_#457524] active:shadow-none active:translate-y-[6px] transition-all flex items-center gap-2 border-2 border-[#81b64c]"
+                                                className="bg-[#81b64c] hover:bg-[#72a341] text-white text-xl font-bold px-8 py-3 rounded-full shadow-[0_6px_0_#457524] active:shadow-none active:translate-y-[6px] transition-all flex items-center gap-2 border-2 border-[#81b64c] relative overflow-hidden"
                                             >
-                                                <ChessKnight size={24} /> START!
+                                                <motion.div
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                                    animate={{
+                                                        x: ['-100%', '100%'],
+                                                    }}
+                                                    transition={{
+                                                        duration: 2,
+                                                        repeat: Infinity,
+                                                        ease: "linear"
+                                                    }}
+                                                />
+                                                <ChessKnight size={24} className="relative z-10" /> 
+                                                <span className="relative z-10">START!</span>
                                             </motion.button>
                                         ) : (
                                             <motion.p

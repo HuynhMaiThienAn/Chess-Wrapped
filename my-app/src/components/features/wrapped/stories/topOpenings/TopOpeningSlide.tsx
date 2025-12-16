@@ -138,14 +138,27 @@ export default function TopOpeningSlide() {
                                 </div>
 
                                 {/* Bar Container */}
-                                <div className="w-full h-3 bg-[#262421] rounded-full overflow-hidden border border-[#3e3c39]">
+                                <div className="w-full h-3 bg-[#262421] rounded-full overflow-hidden border border-[#3e3c39] relative">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${relativeWidth}%` }}
-                                        transition={{ duration: 1, delay: 0.2 + (idx * 0.1), ease: "easeOut" }}
-                                        className="h-full rounded-full"
+                                        transition={{ duration: 1.2, delay: 0.2 + (idx * 0.1), ease: "easeOut" }}
+                                        className="h-full rounded-full relative overflow-hidden"
                                         style={{ backgroundColor: COLORS[idx % COLORS.length] }}
-                                    />
+                                    >
+                                        <motion.div
+                                            animate={{
+                                                x: ['-100%', '100%'],
+                                            }}
+                                            transition={{
+                                                duration: 2,
+                                                repeat: Infinity,
+                                                ease: "linear",
+                                                delay: idx * 0.2
+                                            }}
+                                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                        />
+                                    </motion.div>
                                 </div>
                             </div>
                         );

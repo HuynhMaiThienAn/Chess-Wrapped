@@ -137,10 +137,63 @@ export default function TotalGamesSlide() {
                             </div>
                         </div>
 
-                        <div className="w-full h-4 bg-[#262421] rounded-full flex overflow-hidden border border-[#3e3c39] mb-1">
-                            <motion.div initial={{ width: 0 }} animate={{ width: winW }} transition={{ duration: 1, delay: 0.2 }} className="h-full bg-[#81b64c]" />
-                            <motion.div initial={{ width: 0 }} animate={{ width: drawW }} transition={{ duration: 1, delay: 0.4 }} className="h-full bg-[#989795]" />
-                            <motion.div initial={{ width: 0 }} animate={{ flex: 1 }} transition={{ duration: 1, delay: 0.6 }} className="h-full bg-[#ca3431]" />
+                        <div className="w-full h-4 bg-[#262421] rounded-full flex overflow-hidden border border-[#3e3c39] mb-1 relative">
+                            <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ width: winW }} 
+                                transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }} 
+                                className="h-full bg-[#81b64c] relative overflow-hidden"
+                            >
+                                <motion.div
+                                    animate={{
+                                        x: ['-100%', '100%'],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "linear"
+                                    }}
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                />
+                            </motion.div>
+                            <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ width: drawW }} 
+                                transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }} 
+                                className="h-full bg-[#989795] relative overflow-hidden"
+                            >
+                                <motion.div
+                                    animate={{
+                                        x: ['-100%', '100%'],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "linear",
+                                        delay: 0.5
+                                    }}
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                />
+                            </motion.div>
+                            <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ flex: 1 }} 
+                                transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }} 
+                                className="h-full bg-[#ca3431] relative overflow-hidden"
+                            >
+                                <motion.div
+                                    animate={{
+                                        x: ['-100%', '100%'],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "linear",
+                                        delay: 1
+                                    }}
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                />
+                            </motion.div>
                         </div>
                     </motion.div>
                 </div>

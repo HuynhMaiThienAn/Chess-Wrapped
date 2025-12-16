@@ -16,6 +16,8 @@ import EndSlide from './stories/EndSlide';
 import TopOpeningSlide from './stories/topOpenings';
 import TournamentsSlide from './stories/tournaments';
 import FriendsSlide from './stories/friends';
+import AccuracySlide from './stories/AccuracySlide';
+import TimeControlSlide from './stories/TimeControlSlide';
 
 export default function Carousel() {
     const { stats: data } = useChessStats();
@@ -41,6 +43,8 @@ export default function Carousel() {
         { id: 'welcome', component: <WelcomeSlide /> },
         { id: 'games', component: <TotalGamesSlide /> },
         { id: 'elo', component: <EloGraphSlide /> },
+        { id: 'accuracy', component: <AccuracySlide />, condition: () => data.averageAccuracy && Object.keys(data.averageAccuracy).length > 0 },
+        { id: 'time-control', component: <TimeControlSlide />, condition: () => data.timeControlBreakdown && data.timeControlBreakdown.length > 0 },
         { id: 'op_top', component: <TopOpeningSlide /> },
         { id: 'op_worst', component: <WorstOpeningSlide />, condition: () => (data.worstOpeningsWhite.length > 0 || data.worstOpeningsBlack.length > 0) },
         { id: 'tourney', component: <TournamentsSlide />, condition: () => data.tournamentCount > 0 },
@@ -110,14 +114,24 @@ export default function Carousel() {
 
             {/* SLIDE AREA */}
             <div className="flex-1 w-full flex items-center justify-center relative min-h-0 perspective-1000 py-2 h-full pb-30">
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait" custom={1}>
                     <motion.div
                         key={slides[currentStep].id}
-                        initial={{ opacity: 0, x: 50, scale: 0.95, rotate: 2 }}
-                        animate={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
-                        exit={{ opacity: 0, x: -50, scale: 0.95, rotate: -2 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                        custom={1}
+                        initial={{ opacity: 0, x: 100, scale: 0.9, rotateY: 15 }}
+                        animate={{ opacity: 1, x: 0, scale: 1, rotateY: 0 }}
+                        exit={{ opacity: 0, x: -100, scale: 0.9, rotateY: -15 }}
+                        transition={{ 
+                            type: "spring", 
+                            stiffness: 300, 
+                            damping: 25,
+                            mass: 0.8
+                        }}
                         className="w-full flex justify-center h-full items-center"
+                        style={{ 
+                            transformStyle: 'preserve-3d',
+                            backfaceVisibility: 'hidden'
+                        }}
                     >
                         <div className="w-full max-w-[350px] h-[580px] max-h-[80vh] flex items-center justify-center">
                             {slides[currentStep].component}
@@ -128,35 +142,63 @@ export default function Carousel() {
 
             {/* CONTROLS */}
             <div className="absolute bottom-3 w-full max-w-[300px] flex gap-4 justify-between z-50">
-                <button
+                <motion.button
                     onClick={handlePrev}
                     disabled={currentStep === 0}
-                    className="w-12 h-12 rounded-[20px] bg-white text-[#302e2b] border-b-4 border-r-4 border-gray-300 flex items-center justify-center active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 transition-all disabled:opacity-0 disabled:pointer-events-none "
+                    whileHover={{ scale: currentStep === 0 ? 1 : 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-12 h-12 rounded-[20px] bg-white text-[#302e2b] border-b-4 border-r-4 border-gray-300 flex items-center justify-center active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 transition-all disabled:opacity-0 disabled:pointer-events-none"
                 >
                     <ArrowLeft size={20} strokeWidth={4} />
-                </button>
+                </motion.button>
 
                 {!isLastSlide ? (
-                    <button
+                    <motion.button
                         onClick={handleNext}
-                        className="flex-1 h-12 bg-[#ffc800] hover:bg-[#ffda66] text-[#302e2b] rounded-[20px] border-b-4 border-r-4 border-[#e6b800] flex items-center justify-center gap-3 active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 transition-all"
+                        whileHover={{ scale: 1.05, boxShadow: "0 8px 20px rgba(255, 200, 0, 0.4)" }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex-1 h-12 bg-[#ffc800] hover:bg-[#ffda66] text-[#302e2b] rounded-[20px] border-b-4 border-r-4 border-[#e6b800] flex items-center justify-center gap-3 active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 transition-all relative overflow-hidden"
                     >
-                        <span className="font-black text-l tracking-wider uppercase">
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                            animate={{
+                                x: ['-100%', '100%'],
+                            }}
+                            transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                        />
+                        <span className="font-black text-l tracking-wider uppercase relative z-10">
                             {isFirstSlide ? "Start!" : "Next"}
                         </span>
-                        <ArrowRight size={20} strokeWidth={4} />
-                    </button>
+                        <ArrowRight size={20} strokeWidth={4} className="relative z-10" />
+                    </motion.button>
                 ) : (
-                    <button
+                    <motion.button
                         onClick={() => {
                             playClick();
                             window.location.reload();
                         }}
-                        className="flex-1 h-12 bg-[#ffc800] hover:bg-[#ffda66] text-[#302e2b] rounded-[20px] border-b-4 border-r-4 border-[#e6b800] flex items-center justify-center gap-3 active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 transition-all"
+                        whileHover={{ scale: 1.05, boxShadow: "0 8px 20px rgba(255, 200, 0, 0.4)" }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex-1 h-12 bg-[#ffc800] hover:bg-[#ffda66] text-[#302e2b] rounded-[20px] border-b-4 border-r-4 border-[#e6b800] flex items-center justify-center gap-3 active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 transition-all relative overflow-hidden"
                     >
-                        <span className="font-black text-l tracking-wider uppercase">Replay</span>
-                        <RotateCcw size={20} strokeWidth={4} />
-                    </button>
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                            animate={{
+                                x: ['-100%', '100%'],
+                            }}
+                            transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                        />
+                        <span className="font-black text-l tracking-wider uppercase relative z-10">Replay</span>
+                        <RotateCcw size={20} strokeWidth={4} className="relative z-10" />
+                    </motion.button>
                 )}
             </div>
         </div>

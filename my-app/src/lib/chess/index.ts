@@ -4,6 +4,8 @@ import { analyzeElo } from './analysis/elo';
 import { analyzeOpenings } from './analysis/openings';
 import { analyzeFriends } from './analysis/social';
 import { analyzeMatches } from './analysis/matches';
+import { analyzeAccuracy } from './analysis/accuracy';
+import { analyzeTimeControl } from './analysis/timeControl';
 import { getAvatars } from './avatarService';
 
 const TARGET_YEAR = '2025';
@@ -21,6 +23,8 @@ export async function generateWrappedStats(username: string) {
     const openings = analyzeOpenings(games, username);
     const social = analyzeFriends(games, username);
     const impressiveMatches = analyzeMatches(games, username);
+    const accuracy = analyzeAccuracy(games, username);
+    const timeControl = analyzeTimeControl(games, username);
 
     // 3. Calculate Tournament Count (New Logic)
     // We count unique Event names that contain "Tournament" or "Arena"
@@ -50,6 +54,8 @@ export async function generateWrappedStats(username: string) {
         ...general,
         ...elo,
         ...openings,
+        ...accuracy,
+        ...timeControl,
         topFriends: friendsWithAvatars,
         impressiveMatches: matchesWithAvatars,
         tournamentCount: uniqueTournaments.size,

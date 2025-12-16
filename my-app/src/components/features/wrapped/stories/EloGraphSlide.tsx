@@ -208,8 +208,16 @@ export default function EloGraphSlide() {
                                         stroke={RANK_COLORS[index]}
                                         strokeWidth={3}
                                         dot={{ r: 2, fill: RANK_COLORS[index], strokeWidth: 0 }}
-                                        activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }}
+                                        activeDot={{ 
+                                            r: 6, 
+                                            stroke: '#fff', 
+                                            strokeWidth: 2,
+                                            fill: RANK_COLORS[index],
+                                            style: { filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.5))' }
+                                        }}
                                         connectNulls
+                                        animationDuration={1500}
+                                        animationBegin={index * 200}
                                     >
                                         <LabelList content={(props: any) => <CustomLabel {...props} variantName={mode} />} />
                                     </Line>
