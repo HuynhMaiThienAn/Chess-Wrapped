@@ -17,6 +17,8 @@ import TopOpeningSlide from './stories/topOpenings';
 import TournamentsSlide from './stories/tournaments';
 import FriendsSlide from './stories/friends';
 import WinSlide from './stories/WinSlide';
+import LossSlide from './stories/LossSlide';
+
 
 export default function Carousel() {
     const { stats: data } = useChessStats();
@@ -43,6 +45,7 @@ export default function Carousel() {
         { id: 'games', component: <TotalGamesSlide /> },
         { id: 'elo', component: <EloGraphSlide /> },
         { id: 'wins_by', component: <WinSlide />, condition: () => data.wins > 0 },
+        { id: 'loss_by', component: <LossSlide />, condition: () => data.losses > 0 },
         { id: 'op_top', component: <TopOpeningSlide /> },
         { id: 'op_worst', component: <WorstOpeningSlide />, condition: () => (data.worstOpeningsWhite.length > 0 || data.worstOpeningsBlack.length > 0) },
         { id: 'tourney', component: <TournamentsSlide />, condition: () => data.tournamentCount > 0 },

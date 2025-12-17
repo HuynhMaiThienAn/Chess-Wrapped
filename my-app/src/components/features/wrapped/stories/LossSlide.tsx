@@ -2,38 +2,38 @@
 
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { Trophy } from 'lucide-react';
+import { Skull } from 'lucide-react';
 import StoryCard from '@/components/ui/StoryCard';
 import { StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
 import { useChessStats } from '@/context/ChessContext';
 
 const COLORS = [
-    '#81b64c',
-    '#ffc800',
-    '#2c8c99',
-    '#9e5ec2',
-    '#eb6b65',
+    '#ca3431',
+    '#f58b51',
+    '#8b5cf6',
+    '#3b82f6',
+    '#facc15',
 ];
 
-export default function WinTerminationSlide() {
+export default function LossSlide() {
     const { stats: data } = useChessStats();
 
-    const chartData = (data.winMethods || []).filter(d => d.count > 0);
+    const chartData = (data.lossMethods || []).filter(d => d.count > 0);
     const total = chartData.reduce((acc, curr) => acc + curr.count, 0);
 
     if (total === 0) return null;
 
     return (
-        <StoryCard id="slide-win-methods" className={CONTAINERS.slideCard}>
+        <StoryCard id="slide-loss-methods" className={CONTAINERS.slideCard}>
             <StoryBackground>
-                <div className="absolute top-10 right-10 opacity-10 text-[#81b64c]">
-                    <Trophy size={60} />
+                <div className="absolute top-10 right-10 opacity-10 text-[#ca3431]">
+                    <Skull size={60} />
                 </div>
             </StoryBackground>
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
-                <motion.div variants={itemVariants} className="w-full flex flex-col justify-start items-center px-4 mb-2 z-10">
+                <motion.div variants={itemVariants} className="w-full flex flex-col justify-start items-center px-4 mb-2 z-10 -mt-2">
                     <div className="flex items-center justify-center w-full mb-1">
                         <div className="bg-white rounded-full shadow-lg mr-3">
                             <img
@@ -42,12 +42,12 @@ export default function WinTerminationSlide() {
                                 className="w-14 h-14 rounded-full object-cover border-4 border-[#81b64c]"
                             />
                         </div>
-                        <h2 className="text-3xl font-black text-white drop-shadow-md leading-none">How did<br/>you win?</h2>
+                        <h2 className="text-3xl font-black text-white drop-shadow-md leading-none">How did<br/>you lose?</h2>
                     </div>
-                    <p className="text-[#989795] font-bold text-s uppercase tracking-widest mt-5">Total Wins: {total.toLocaleString()}</p>
+                    <p className="text-[#989795] font-bold text-s uppercase tracking-widest mt-5">Total Losses: {total.toLocaleString()}</p>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="w-full h-[260px] relative z-10 -my-2">
+                <motion.div variants={itemVariants} className="w-full h-[260px] relative z-10 -my-5">
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                             <Pie
@@ -82,7 +82,7 @@ export default function WinTerminationSlide() {
                     </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="w-full px-6 mt-4 flex flex-col gap-1.5 z-10 overflow-hidden max-h-[160px] custom-scrollbar pb-4">
+                <motion.div variants={itemVariants} className="w-full px-6 mt-3 flex flex-col gap-1.5 z-10 overflow-hidden max-h-[160px] pb-4">
                     {chartData.map((item, idx) => (
                         <div key={item.name} className="flex justify-between items-center text-xs py-1 px-2 bg-[#262421] rounded-md border border-[#3e3c39]">
                             <div className="flex items-center gap-2">
