@@ -3,6 +3,8 @@ import { getOpeningFromPGN, calculateWinRate } from '../util';
 
 interface RawOpening {
     wins: number;
+    draws: number;
+    losses: number;
     total: number;
     highestElo: number;
 }
@@ -14,7 +16,7 @@ export function analyzeOpenings(games: ChessGame[], username: string) {
 
     // Helper to process a single game record
     const process = (record: Record<string, RawOpening>, name: string, won: boolean, elo: number) => {
-        if (!record[name]) record[name] = { wins: 0, total: 0, highestElo: 0 };
+        if (!record[name]) record[name] = { wins: 0, draws: 0, losses: 0, total: 0, highestElo: 0 };
         record[name].total += 1;
         if (won) {
             record[name].wins += 1;
@@ -60,6 +62,8 @@ export function analyzeOpenings(games: ChessGame[], username: string) {
                 name,
                 count: stats.total,
                 winRate: calculateWinRate(stats.wins, stats.total),
+                drawRate: Math.round((stats.draws / stats.total) * 100),
+                lossRate: Math.round((stats.losses / stats.total) * 100),
                 highestWinElo: stats.highestElo
             }))
             .sort((a, b) => {

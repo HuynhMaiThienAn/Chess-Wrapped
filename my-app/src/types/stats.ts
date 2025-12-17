@@ -12,6 +12,10 @@ export interface GameStats {
     draws: number;
     winRate: number;
 
+    winMethods: { name: string; count: number }[];
+    lossMethods: { name: string; count: number }[];
+    drawMethods: { name: string; count: number }[];
+
     // Elo
     eloHistory: {
         date: string;

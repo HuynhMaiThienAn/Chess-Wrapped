@@ -1,6 +1,27 @@
 import { ChessGame } from '@/types';
 import { getPgnTag } from '../util';
 
+const formatResult = (result: string): string => {
+    switch (result) {
+        case 'win': return 'Win';
+        case 'checkmated': return 'Checkmate';
+        case 'agreed': return 'Agreement';
+        case 'repetition': return 'Repetition';
+        case 'timeout': return 'Timeout';
+        case 'resigned': return 'Resignation';
+        case 'stalemate': return 'Stalemate';
+        case 'insufficient': return 'Insufficient Material';
+        case '50move': return '50 Move Rule';
+        case 'abandoned': return 'Abandonment';
+        case 'time': return 'Timeout';
+        case 'kingofthehill': return 'KOTH';
+        case 'threecheck': return 'Three Check';
+        case 'bughouse': return 'Bughouse';
+        case 'crazyhouse': return 'Crazyhouse';
+        default: return 'Other';
+    }
+};
+
 export function analyzeGeneral(games: ChessGame[], username: string) {
     let wins = 0;
     let losses = 0;
@@ -10,13 +31,30 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
     const variantCounts: Record<string, number> = {};
     const lowerUsername = username.toLowerCase();
 
+    const winMethods: Record<string, number> = {};
+    const lossMethods: Record<string, number> = {};
+    const drawMethods: Record<string, number> = {};
+
     games.forEach(game => {
         const isWhite = game.white.username.toLowerCase() === lowerUsername;
         const userSide = isWhite ? game.white : game.black;
 
-        if (userSide.result === 'win') wins++;
-        else if (['repetition', 'stalemate', 'insufficient', 'agreed', 'time', '50move'].includes(userSide.result)) draws++;
-        else losses++;
+        if (userSide.result === 'win') {
+            wins++;
+            const opponentRes = isWhite ? game.black.result : game.white.result;
+            const method = formatResult(opponentRes);
+            winMethods[method] = (winMethods[method] || 0) + 1;
+        }
+        else if (['repetition', 'stalemate', 'insufficient', 'agreed', 'time', '50move'].includes(userSide.result)) {
+            draws++;
+            const method = formatResult(userSide.result);
+            drawMethods[method] = (drawMethods[method] || 0) + 1;
+        }
+        else {
+            losses++;
+            const method = formatResult(userSide.result);
+            lossMethods[method] = (lossMethods[method] || 0) + 1;
+        }
 
         // Time Calculation
         if (game.pgn) {
@@ -43,6 +81,12 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         variantCounts[modeName] = (variantCounts[modeName] || 0) + 1;
     });
 
+    const sortMethods = (map: Record<string, number>) => {
+        return Object.entries(map)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count);
+    };
+
     // Sort variants by count
     const gamesByVariant = Object.entries(variantCounts)
         .map(([name, count]) => ({ name, count }))
@@ -58,6 +102,9 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         draws,
         winRate: games.length > 0 ? Math.round((wins / games.length) * 100) : 0,
         gamesByVariant,
-        mostPlayedVariant
+        mostPlayedVariant,
+        winMethods: sortMethods(winMethods),
+        lossMethods: sortMethods(lossMethods),
+        drawMethods: sortMethods(drawMethods)
     };
 }
