@@ -35,28 +35,56 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
     const lossMethods: Record<string, number> = {};
     const drawMethods: Record<string, number> = {};
 
-    games.forEach(game => {
+    let currentWinStreak = 0;
+    let longestWinStreak = 0;
+    let currentLossStreak = 0;
+    let longestLossStreak = 0;
+
+    // Daily Streak Logic Prep
+    const uniqueDays = new Set<string>();
+
+    // 1. Sort games by Date (Oldest to Newest)
+    const sortedGames = [...games].sort((a, b) => a.end_time - b.end_time);
+
+    sortedGames.forEach(game => {
         const isWhite = game.white.username.toLowerCase() === lowerUsername;
         const userSide = isWhite ? game.white : game.black;
+        const result = userSide.result;
 
-        if (userSide.result === 'win') {
+        // --- STREAKS & STATS ---
+        if (result === 'win') {
             wins++;
             const opponentRes = isWhite ? game.black.result : game.white.result;
             const method = formatResult(opponentRes);
             winMethods[method] = (winMethods[method] || 0) + 1;
-        }
-        else if (['repetition', 'stalemate', 'insufficient', 'agreed', 'time', '50move'].includes(userSide.result)) {
+
+            currentWinStreak++;
+            currentLossStreak = 0;
+            if (currentWinStreak > longestWinStreak) longestWinStreak = currentWinStreak;
+
+        } else if (['repetition', 'stalemate', 'insufficient', 'agreed', 'time', '50move'].includes(result)) {
             draws++;
-            const method = formatResult(userSide.result);
+            const method = formatResult(result);
             drawMethods[method] = (drawMethods[method] || 0) + 1;
-        }
-        else {
+            currentWinStreak = 0;
+            currentLossStreak = 0;
+
+        } else {
             losses++;
-            const method = formatResult(userSide.result);
+            const method = formatResult(result);
             lossMethods[method] = (lossMethods[method] || 0) + 1;
+            currentLossStreak++;
+            currentWinStreak = 0;
+            if (currentLossStreak > longestLossStreak) longestLossStreak = currentLossStreak;
         }
 
-        // Time Calculation
+        // --- TIME & DATES ---
+        if (game.end_time) {
+            // Collect unique days for daily streak calculation
+            const dayDate = new Date(game.end_time * 1000).toISOString().split('T')[0];
+            uniqueDays.add(dayDate);
+        }
+
         if (game.pgn) {
             const date = getPgnTag(game.pgn, 'Date')?.replace(/\./g, '-');
             const start = getPgnTag(game.pgn, 'StartTime');
@@ -65,14 +93,9 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             if (date && start && end) {
                 const startTime = new Date(`${date}T${start}Z`).getTime();
                 const endTime = new Date(`${date}T${end}Z`).getTime();
-
                 let diff = (endTime - startTime) / 1000;
-
-                // Handle games crossing midnight
                 if (diff < 0) diff += 86400;
-                if (diff > 0 && diff < 21600) {
-                    totalSeconds += diff;
-                }
+                if (diff > 0 && diff < 21600) totalSeconds += diff;
             }
         }
 
@@ -81,18 +104,32 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         variantCounts[modeName] = (variantCounts[modeName] || 0) + 1;
     });
 
-    const sortMethods = (map: Record<string, number>) => {
-        return Object.entries(map)
-            .map(([name, count]) => ({ name, count }))
-            .sort((a, b) => b.count - a.count);
-    };
+    // --- CALCULATE LONGEST DAILY STREAK ---
+    const sortedDays = Array.from(uniqueDays).sort();
+    let longestDailyStreak = 0;
+    let tempDaily = 0;
 
-    // Sort variants by count
-    const gamesByVariant = Object.entries(variantCounts)
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count);
+    for (let i = 0; i < sortedDays.length; i++) {
+        if (i > 0) {
+            const prev = new Date(sortedDays[i-1]);
+            const curr = new Date(sortedDays[i]);
+            // Calculate difference in days
+            const diffTime = Math.abs(curr.getTime() - prev.getTime());
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-    const mostPlayedVariant = gamesByVariant.length > 0 ? gamesByVariant[0].name : 'Chess';
+            if (diffDays === 1) {
+                tempDaily++;
+            } else {
+                tempDaily = 1;
+            }
+        } else {
+            tempDaily = 1;
+        }
+        longestDailyStreak = Math.max(longestDailyStreak, tempDaily);
+    }
+
+    const sortMethods = (map: Record<string, number>) => Object.entries(map).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+    const gamesByVariant = Object.entries(variantCounts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
 
     return {
         totalGames: games.length,
@@ -102,7 +139,10 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         draws,
         winRate: games.length > 0 ? Math.round((wins / games.length) * 100) : 0,
         gamesByVariant,
-        mostPlayedVariant,
+        mostPlayedVariant: gamesByVariant.length > 0 ? gamesByVariant[0].name : 'Chess',
+        longestWinStreak,
+        longestLossStreak,
+        longestDailyStreak,
         winMethods: sortMethods(winMethods),
         lossMethods: sortMethods(lossMethods),
         drawMethods: sortMethods(drawMethods)

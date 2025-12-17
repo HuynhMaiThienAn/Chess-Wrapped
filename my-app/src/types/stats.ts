@@ -25,6 +25,10 @@ export interface GameStats {
         Bullet?: number;
     }[];
 
+    longestWinStreak: number;
+    longestLossStreak: number;
+    longestDailyStreak: number;
+
     eloChange: {
         Blitz: number;
         Rapid: number;

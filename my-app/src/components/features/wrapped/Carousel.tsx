@@ -14,11 +14,11 @@ import ImpressiveMatchesSlide from './stories/ImpressiveMatchesSlide';
 import WorstOpeningSlide from './stories/WorstOpeningSlide';
 import EndSlide from './stories/EndSlide';
 import TopOpeningSlide from './stories/topOpenings';
-import TournamentsSlide from './stories/tournaments';
 import FriendsSlide from './stories/friends';
 import WinSlide from './stories/WinSlide';
 import LossSlide from './stories/LossSlide';
 import DrawSlide from './stories/DrawSlide';
+import StreakSlide from "./stories/StreakSlide";
 
 export default function Carousel() {
     const { stats: data } = useChessStats();
@@ -47,9 +47,9 @@ export default function Carousel() {
         { id: 'wins_by', component: <WinSlide />, condition: () => data.wins > 0 },
         { id: 'loss_by', component: <LossSlide />, condition: () => data.losses > 0 },
         { id: 'draw_by', component: <DrawSlide />, condition: () => data.draws > 0 },
+        { id: 'streak', component: <StreakSlide /> },
         { id: 'op_top', component: <TopOpeningSlide /> },
         { id: 'op_worst', component: <WorstOpeningSlide />, condition: () => (data.worstOpeningsWhite.length > 0 || data.worstOpeningsBlack.length > 0) },
-        { id: 'tourney', component: <TournamentsSlide />, condition: () => data.tournamentCount > 0 },
         { id: 'friends', component: <FriendsSlide /> },
         { id: 'impressive', component: <ImpressiveMatchesSlide />, condition: () => data.impressiveMatches.length > 0 },
         { id: 'end', component: <EndSlide onReset={() => window.location.reload()} /> },
