@@ -78,7 +78,7 @@ export default function TopOpeningSlide() {
     ].sort((a, b) => b.count - a.count);
 
     // 2. Prepare Data
-    const top5 = allOpenings.slice(0, 6);
+    const top5 = allOpenings.slice(0, 5);
     const totalGames = data.totalGames || 1;
 
     const chartData = top5.map(op => ({
@@ -117,7 +117,7 @@ export default function TopOpeningSlide() {
                 {/* 2. Horizontal Bar Graph */}
                 <motion.div
                     variants={itemVariants}
-                    className="w-full px-1 flex flex-col gap-4 z-10 mb-2 overflow-y-auto max-h-[350px]"
+                    className="w-full px-1 flex flex-col gap-4 z-10 mb-2 overflow-hidden max-h-[350px]"
                 >
                     {chartData.map((item, idx) => {
                         // Calculate width relative to your #1 opening
@@ -158,7 +158,7 @@ export default function TopOpeningSlide() {
                     )}
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="z-10 px-4 mb-2">
+                <motion.div variants={itemVariants} className="z-10 px-4 mb-2 mt-3">
                     <div className={TYPOGRAPHY.comment}>
                         "{getOpeningComment(topOpeningName)}"
                     </div>

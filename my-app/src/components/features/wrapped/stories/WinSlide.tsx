@@ -42,9 +42,9 @@ export default function WinTerminationSlide() {
                                 className="w-14 h-14 rounded-full object-cover border-4 border-[#81b64c]"
                             />
                         </div>
-                        <h2 className="text-3xl font-black text-white drop-shadow-md leading-none">How did<br/>you win?</h2>
+                        <h2 className="text-2xl font-black text-white drop-shadow-md leading-none">How did<br/>you win?</h2>
                     </div>
-                    <p className="text-[#989795] font-bold text-s uppercase tracking-widest mt-5">Total Wins: {total.toLocaleString()}</p>
+                    <p className="text-[#989795] font-bold text-s uppercase tracking-widest mt-3">Total Wins: {total.toLocaleString()}</p>
                 </motion.div>
 
                 <motion.div variants={itemVariants} className="w-full h-[260px] relative z-10 -my-2">

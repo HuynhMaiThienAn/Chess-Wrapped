@@ -7,7 +7,6 @@ import StoryCard from '@/components/ui/StoryCard';
 import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
 import { useChessStats } from '@/context/ChessContext';
 
-// 👇 Helper: Auto-Scales text to fit container width
 const AutoFitText = ({ text, className = "" }: { text: string, className?: string }) => {
     const textRef = useRef<HTMLSpanElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);

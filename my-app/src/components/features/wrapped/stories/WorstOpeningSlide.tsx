@@ -9,7 +9,6 @@ import { useChessStats } from '@/context/ChessContext';
 
 const COLORS = ['#ca3431', '#d64a31', '#e06531', '#ea7e31', '#989795'];
 
-// Helper to auto-scale text (Same as Opening Slide)
 const AutoFitText = ({ text }: { text: string }) => {
     const textRef = useRef<HTMLSpanElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -21,7 +20,9 @@ const AutoFitText = ({ text }: { text: string }) => {
             const txt = textRef.current;
             if (!container || !txt) return;
 
+            // Reset scale to measure natural size
             txt.style.transform = 'scale(1)';
+
             const containerWidth = container.clientWidth;
             const textWidth = txt.scrollWidth;
 
@@ -32,10 +33,12 @@ const AutoFitText = ({ text }: { text: string }) => {
             }
         };
 
+        // Run initially and on resize
         resizeText();
         window.addEventListener('resize', resizeText);
         return () => window.removeEventListener('resize', resizeText);
     }, [text]);
+
 
     return (
         <div ref={containerRef} className="w-full overflow-hidden flex items-center">
@@ -67,7 +70,7 @@ export default function WorstOpeningSlide() {
     });
 
     // 3. Take Top 5
-    const top5Worst = allWorst.slice(0, 6);
+    const top5Worst = allWorst.slice(0, 7);
 
     // 4. Prepare Chart Data
     // For "Worst" Openings, the Bar Width represents WIN RATE.
@@ -99,14 +102,14 @@ export default function WorstOpeningSlide() {
                         />
                     </div>
                     <h2 className="text-2xl font-bold text-white drop-shadow-md">
-                        Tough Battles
+                        Your weakness :(
                     </h2>
                 </motion.div>
 
                 {/* Horizontal Bar Graph */}
                 <motion.div
                     variants={itemVariants}
-                    className="w-full px-6 flex flex-col gap-4 z-10 mb-2 overflow-y-auto max-h-[350px] custom-scrollbar"
+                    className="w-full px-6 flex flex-col gap-4 z-10 mb-2 overflow-hidden max-h-[350px]"
                 >
                     {chartData.map((item, idx) => {
                         // Bar Width = Win Rate.
@@ -123,7 +126,7 @@ export default function WorstOpeningSlide() {
                                         {item.count} games <span className="text-red-400 font-bold">({item.winRate}%)</span>
                                     </span>
                                 </div>
-                                <div className="w-full h-3 bg-[#262421] rounded-full overflow-hidden border border-[#3e3c39]">
+                                <div className="w-full h-3 bg-[#262421] rounded-full border border-[#3e3c39]">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${relativeWidth}%` }}
@@ -141,14 +144,6 @@ export default function WorstOpeningSlide() {
                             No significant data found.
                         </div>
                     )}
-                </motion.div>
-
-                {/* Footer Comment */}
-                <motion.div variants={itemVariants} className="z-10 px-4 mt-auto mb-2">
-                    <div className={TYPOGRAPHY.comment}>
-                        <TrendingDown size={18} className="inline mr-2 -mt-1 text-red-400" />
-                        "Learn how to deal with these lines now :D"
-                    </div>
                 </motion.div>
 
             </motion.div>
