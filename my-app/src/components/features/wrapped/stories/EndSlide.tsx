@@ -1,26 +1,50 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation'; // 1. Import useRouter
-import { Github, MessageSquare, Heart, Trophy, Zap, Target, Home } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Github, MessageSquare, Heart, Trophy, Zap, Target, Home, Instagram, Coffee, Star } from 'lucide-react';
 import StoryCard from '@/components/ui/StoryCard';
-import { StoryHeader, StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
+import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
 import { useChessStats } from '@/context/ChessContext';
 
 const defaultAvatar = 'https://www.chess.com/bundles/web/images/user-image.svg';
 
+// Floating Animation for background elements
+const FloatingIcon = ({ children, delay, x, y, color }: { children: React.ReactNode, delay: number, x: number, y: number, color?: string }) => (
+    <motion.div
+        className={`absolute opacity-10 pointer-events-none ${color || 'text-white'}`}
+        initial={{ x, y }}
+        animate={{
+            y: [y, y - 15, y],
+            rotate: [0, 5, -5, 0]
+        }}
+        transition={{
+            duration: 5,
+            delay,
+            repeat: Infinity,
+            ease: "easeInOut"
+        }}
+    >
+        {children}
+    </motion.div>
+);
+
 export default function EndSlide({ onReset }: { onReset: () => void }) {
-    const router = useRouter(); // 2. Initialize router
+    const router = useRouter();
     const { stats: data } = useChessStats();
 
     return (
         <StoryCard id="slide-end" className={CONTAINERS.slideCard}>
 
             <StoryBackground>
-                <div className="absolute top-1/4 left-1/4 text-white opacity-5"><Trophy size={60} /></div>
-                <div className="absolute bottom-1/4 right-1/4 text-white opacity-5"><Heart size={50} /></div>
-                <div className="absolute top-10 right-10 text-white opacity-5"><Zap size={40} /></div>
-                <div className="absolute bottom-10 left-10 text-white opacity-5"><Target size={45} /></div>
+                {/* Dynamic Background */}
+                <FloatingIcon x={40} y={80} delay={0}><Trophy size={60} /></FloatingIcon>
+                <FloatingIcon x={280} y={150} delay={1}><Heart size={50} /></FloatingIcon>
+                <FloatingIcon x={-20} y={400} delay={2} color="text-[#ffc800]"><Zap size={40} fill="currentColor" /></FloatingIcon>
+                <FloatingIcon x={250} y={500} delay={1.5}><Target size={45} /></FloatingIcon>
+
+                {/* Gradient Glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#ffc800] blur-[120px] opacity-10 rounded-full" />
             </StoryBackground>
 
             <motion.div
@@ -29,61 +53,98 @@ export default function EndSlide({ onReset }: { onReset: () => void }) {
                 initial="hidden"
                 animate="visible"
             >
-                <StoryHeader
-                    icon={
-                        <div className="w-16 h-16 rounded-full border-2 border-[#ffc800] overflow-hidden">
+                {/* --- CUSTOM HEADER (Manual layout to remove gray box) --- */}
+                <motion.div variants={itemVariants} className="flex flex-col items-center mb-6 z-10 ">
+
+                    {/* Avatar Circle - Same style as Welcome Page */}
+                    <div className="relative mb-3 mt-5">
+                        <div className="p-1 bg-white rounded-full shadow-2xl rotate-3">
                             <img
                                 src={data?.avatarUrl || defaultAvatar}
                                 alt="Profile"
-                                className="w-full h-full object-cover"
+                                className="w-20 h-20 rounded-full object-cover border-4 border-[#ffc800] bg-white"
                                 onError={(e) => { (e.target as HTMLImageElement).src = defaultAvatar; }}
                             />
                         </div>
-                    }
-                    iconColor=""
-                    title="That was cool :D"
-                    subtitle="See you next year"
-                />
+                    </div>
 
-                <div className="w-full flex flex-col gap-4 px-6 z-10 mt-2">
+                    {/* Title & Subtitle */}
+                    <h2 className={TYPOGRAPHY.headerTitle}>That was cool :D</h2>
+                    <div className={TYPOGRAPHY.subHeader}>Good luck next year!</div>
+                </motion.div>
 
-                    {/* 1. Feedback Button */}
+                {/* --- BUTTONS SECTION --- */}
+                <div className="w-full flex flex-col gap-3 px-6 z-10 -mt-2">
+
+                    {/* 1. Main CTA: Feedback */}
                     <motion.div variants={itemVariants} className="w-full">
                         <button
                             onClick={() => window.open('https://forms.gle/Eweg1RtYs9is9p6x5', '_blank')}
-                            className="w-full py-3 bg-[#81b64c] hover:bg-[#72a341] text-white font-black uppercase rounded-xl shadow-[0_4px_0_#457524] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2 border-2 border-[#81b64c] group"
+                            className="w-full py-3.5 bg-[#81b64c] hover:bg-[#72a341] text-white font-black uppercase rounded-2xl shadow-[0_4px_0_#457524] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2 border-2 border-[#81b64c] group relative overflow-hidden"
                         >
-                            <MessageSquare size={20} className="group-hover:rotate-12 transition-transform"/>
-                            Share Feedback
+                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <MessageSquare size={22} className="group-hover:rotate-12 transition-transform" fill="currentColor" />
+                            <span className="tracking-wide">Share Feedback</span>
                         </button>
-                        <p className="text-[#989795] text-[10px] font-bold mt-1.5 text-center opacity-70">
-                            Help us improve for 2026!
-                        </p>
                     </motion.div>
 
-                    {/* 2. GitHub Button */}
-                    <motion.div variants={itemVariants} className="w-full">
+                    {/* Divider Text */}
+                    <motion.div variants={itemVariants} className="flex items-center gap-2 py-1 opacity-50">
+                        <div className="h-px bg-white flex-1" />
+                        <span className="text-[10px] uppercase font-bold text-white">Support & Connect</span>
+                        <div className="h-px bg-white flex-1" />
+                    </motion.div>
+
+                    {/* 2. Grid for Socials */}
+                    <div className="grid grid-cols-2 gap-3">
+                        {/* Buy Me a Coffee */}
+                        <motion.div variants={itemVariants}>
+                            <a
+                                href="https://buymeacoffee.com/ryan.h"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-3 bg-[#FFDD00] hover:bg-[#FFEA00] text-[#302e2b] font-black text-xs uppercase rounded-xl shadow-[0_4px_0_#c7a008] active:shadow-none active:translate-y-[4px] transition-all flex flex-col items-center justify-center gap-1 border-2 border-[#FFDD00] h-full"
+                            >
+                                <Coffee size={20} className="text-[#302e2b]" strokeWidth={2.5} />
+                                <span>Buy Coffee</span>
+                            </a>
+                        </motion.div>
+
+                        {/* Instagram (Solid Color) */}
+                        <motion.div variants={itemVariants}>
+                            <a
+                                href="https://www.instagram.com/huynhmaithienan/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-3 bg-[#E1306C] hover:opacity-90 text-white font-black text-xs uppercase rounded-xl shadow-[0_4px_0_#be1e4e] active:shadow-none active:translate-y-[4px] transition-all flex flex-col items-center justify-center gap-1 border-2 border-[#E1306C] h-full relative"
+                            >
+                                <Instagram size={20} className="text-white" strokeWidth={2.5} />
+                                <span>Update News</span>
+                            </a>
+                        </motion.div>
+                    </div>
+
+                    {/* 3. GitHub (Full Width) */}
+                    <motion.div variants={itemVariants} className="w-full mt-1">
                         <a
                             href="https://github.com/huynhmaithienan/ChessWrapped"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-3 bg-[#262421] hover:bg-[#302e2b] text-white font-bold rounded-xl border-2 border-[#3e3c39] shadow-md flex items-center justify-center gap-2 transition-all hover:border-[#ffc800] group"
+                            className="w-full py-3 bg-[#262421] hover:bg-[#302e2b] text-[#989795] hover:text-white font-bold text-xs rounded-xl border-2 border-[#3e3c39] flex items-center justify-center gap-2 transition-all hover:border-[#ffc800] group"
                         >
-                            <Github size={20} className="text-white group-hover:text-[#ffc800] transition-colors"/>
+                            <Github size={18} className="group-hover:text-white transition-colors"/>
                             <span>Star on GitHub</span>
-                            <Heart size={16} className="text-red-500 fill-red-500 animate-pulse ml-1"/>
+                            <Star size={14} className="text-[#ffc800] fill-[#ffc800] group-hover:scale-110 transition-transform"/>
                         </a>
                     </motion.div>
 
-                    <div className="w-full h-px bg-[#3e3c39]/50 my-1"></div>
-
-                    {/* 3. Back to Home */}
+                    {/* 4. Footer Action */}
                     <motion.button
-                        onClick={() => router.push('/')} // 3. Use router.push to go to home
+                        onClick={() => router.push('/')}
                         variants={itemVariants}
-                        className="w-full py-3 text-[#989795] hover:text-white font-bold uppercase tracking-wider text-xs flex items-center justify-center gap-2 hover:bg-[#ffffff05] rounded-lg transition-colors"
+                        className="w-full py-2 text-[#989795] hover:text-white font-bold uppercase tracking-wider text-[10px] flex items-center justify-center gap-2 hover:bg-[#ffffff05] rounded-lg transition-colors "
                     >
-                        <Home size={16} /> {/* Removed invalid href prop */}
+                        <Home size={14} />
                         Back to Homepage
                     </motion.button>
                 </div>

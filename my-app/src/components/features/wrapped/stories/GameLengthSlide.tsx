@@ -28,7 +28,7 @@ export default function GameLengthSlide() {
                             <img
                                 src={data.avatarUrl}
                                 alt={data.username}
-                                className="w-14 h-14 rounded-full object-cover border-4 border-[#3b82f6]"
+                                className="w-14 h-14 rounded-full object-cover border-4 border-[#81b64c]"
                             />
                         </div>
                         <h2 className="text-3xl font-black text-white drop-shadow-md leading-none">Interesting<br/>Games</h2>
