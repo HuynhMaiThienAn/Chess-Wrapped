@@ -25,6 +25,21 @@ export interface GameStats {
         Bullet?: number;
     }[];
 
+    longestGame?: {
+        opponent: string;
+        moves: number;
+        result: string;
+        date: string;
+        url: string;
+    };
+    shortestGame?: {
+        opponent: string;
+        moves: number;
+        result: string;
+        date: string;
+        url: string;
+    };
+
     longestWinStreak: number;
     longestLossStreak: number;
     longestDailyStreak: number;

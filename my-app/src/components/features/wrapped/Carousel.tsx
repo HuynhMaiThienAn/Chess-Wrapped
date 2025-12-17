@@ -20,6 +20,7 @@ import LossSlide from './stories/LossSlide';
 import DrawSlide from './stories/DrawSlide';
 import StreakSlide from "./stories/StreakSlide";
 import MatedBySlide from "./stories/MatedBySlide";
+import GameLengthSlide from "./stories/GameLengthSlide";
 
 export default function Carousel() {
     const { stats: data } = useChessStats();
@@ -52,6 +53,7 @@ export default function Carousel() {
         { id: 'streak', component: <StreakSlide /> },
         { id: 'op_top', component: <TopOpeningSlide /> },
         { id: 'op_worst', component: <WorstOpeningSlide />, condition: () => (data.worstOpeningsWhite.length > 0 || data.worstOpeningsBlack.length > 0) },
+        { id: 'game_length', component: <GameLengthSlide /> },
         { id: 'friends', component: <FriendsSlide /> },
         { id: 'impressive', component: <ImpressiveMatchesSlide />, condition: () => data.impressiveMatches.length > 0 },
         { id: 'end', component: <EndSlide onReset={() => window.location.reload()} /> },

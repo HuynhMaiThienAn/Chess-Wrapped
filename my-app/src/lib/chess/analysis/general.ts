@@ -23,16 +23,33 @@ const formatResult = (result: string): string => {
 };
 
 const getPieceFromMove = (move: string): string => {
-    // Clean the move string of +, #, x
     const cleanMove = move.replace(/[+#x]/g, '');
-
     if (cleanMove.startsWith('N')) return 'Knight';
     if (cleanMove.startsWith('B')) return 'Bishop';
     if (cleanMove.startsWith('R')) return 'Rook';
     if (cleanMove.startsWith('Q')) return 'Queen';
-    if (cleanMove.startsWith('K')) return 'King'; // Discovered checkmate by King move
-    if (cleanMove.startsWith('O')) return 'Rook'; // Castling checkmate
+    if (cleanMove.startsWith('K')) return 'King';
+    if (cleanMove.startsWith('O')) return 'Rook';
     return 'Pawn';
+};
+
+// Robust helper to count moves by cleaning PGN
+const calculateMoveCount = (pgn: string): number => {
+    if (!pgn) return 0;
+
+    let clean = pgn
+        .replace(/\{[^}]+\}/g, '')     // Remove comments/timestamps {[%clk...]}
+        .replace(/\([^)]+\)/g, '')     // Remove variations (...)
+        .replace(/\$\d+/g, '')         // Remove NAGs ($1, $2...)
+        .replace(/\d+\.+/g, ' ')       // Remove move numbers (1. or 1...)
+        .replace(/(1-0|0-1|1\/2-1\/2|\*)$/, '') // Remove result at end
+        .trim();
+
+    // Split by whitespace and filter empty strings
+    const tokens = clean.split(/\s+/).filter(t => t.length > 0);
+
+    // Total plies (half-moves) / 2 = Full Moves. Round up (e.g. 3 plies = 2 moves)
+    return Math.ceil(tokens.length / 2);
 };
 
 export function analyzeGeneral(games: ChessGame[], username: string) {
@@ -41,8 +58,14 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
     let draws = 0;
     let totalSeconds = 0;
 
-    const checkmateCounts: Record<string, number> = {};
+    // Trackers for Highlights
+    let longestGame: { moves: any; opponent?: string; result?: string; date?: string; url?: string; } | null = null;
+    let shortestGame: { moves: any; opponent?: string; result?: string; date?: string; url?: string; } | null = null;
+    let biggestUpset: { ratingDiff: any; opponent?: string; myElo?: number; opponentElo?: number; date?: string; url?: string; } | null = null;
+    let fastestWin: { moves: any; opponent?: string; result?: string; date?: string; url?: string; } | null = null;
+    const castling = { kingside: 0, queenside: 0, noCastle: 0 };
 
+    const checkmateCounts: Record<string, number> = {};
     const variantCounts: Record<string, number> = {};
     const lowerUsername = username.toLowerCase();
 
@@ -55,28 +78,30 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
     let currentLossStreak = 0;
     let longestLossStreak = 0;
 
-    // Daily Streak Logic Prep
     const uniqueDays = new Set<string>();
 
-    // 1. Sort games by Date (Oldest to Newest)
     const sortedGames = [...games].sort((a, b) => a.end_time - b.end_time);
 
     sortedGames.forEach(game => {
         const isWhite = game.white.username.toLowerCase() === lowerUsername;
         const userSide = isWhite ? game.white : game.black;
+        const opponentSide = isWhite ? game.black : game.white;
         const result = userSide.result;
 
+        // --- PRE-CALCULATE MOVE COUNT (Used for multiple stats) ---
+        let moveCount = 0;
+        if (game.pgn) {
+            moveCount = calculateMoveCount(game.pgn);
+        }
+
+        // --- CHECKMATE ANALYSIS ---
         if (userSide.result === 'checkmated' && game.pgn) {
-            // Remove comments/timestamps and result (1-0)
             const cleanPgn = game.pgn
                 .replace(/\{[^}]+\}/g, '')
                 .replace(/1-0|0-1|1\/2-1\/2/g, '')
                 .trim();
-
-            // Find all moves ending in # (Checkmate)
             const moves = cleanPgn.split(/\s+/);
             const mateMove = moves.find(m => m.includes('#'));
-
             if (mateMove) {
                 const piece = getPieceFromMove(mateMove);
                 checkmateCounts[piece] = (checkmateCounts[piece] || 0) + 1;
@@ -94,6 +119,21 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             currentLossStreak = 0;
             if (currentWinStreak > longestWinStreak) longestWinStreak = currentWinStreak;
 
+            // Upset Calculation
+            const myElo = userSide.rating;
+            const opElo = opponentSide.rating;
+            const diff = opElo - myElo;
+            if (diff > 0 && (!biggestUpset || diff > biggestUpset.ratingDiff)) {
+                biggestUpset = {
+                    opponent: opponentSide.username,
+                    ratingDiff: diff,
+                    myElo,
+                    opponentElo: opElo,
+                    date: new Date(game.end_time * 1000).toLocaleDateString(),
+                    url: game.url
+                };
+            }
+
         } else if (['repetition', 'stalemate', 'insufficient', 'agreed', 'time', '50move'].includes(result)) {
             draws++;
             const method = formatResult(result);
@@ -110,9 +150,63 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             if (currentLossStreak > longestLossStreak) longestLossStreak = currentLossStreak;
         }
 
+        // --- GAME LENGTH & HIGHLIGHTS ---
+        if (moveCount > 0) {
+            const gameData = {
+                opponent: opponentSide.username,
+                moves: moveCount,
+                result: formatResult(userSide.result),
+                date: new Date(game.end_time * 1000).toLocaleDateString(),
+                url: game.url
+            };
+
+            // Longest Game
+            if (!longestGame || moveCount > longestGame.moves) {
+                longestGame = gameData;
+            }
+
+            // Shortest Game
+            // Strictly check for decisive games (not aborted/drawn) and > 1 move
+            const isDecisive = ['win', 'checkmated', 'resigned', 'timeout', 'time'].includes(userSide.result);
+            if (isDecisive && moveCount >= 2) {
+                if (!shortestGame || moveCount < shortestGame.moves) {
+                    shortestGame = gameData;
+                }
+            }
+
+            // Fastest Win
+            if (result === 'win' && moveCount >= 2) {
+                if (!fastestWin || moveCount < fastestWin.moves) {
+                    fastestWin = gameData;
+                }
+            }
+        }
+
+        // --- CASTLING ---
+        if (game.pgn) {
+            const clean = game.pgn.replace(/\{[^}]+\}/g, '').replace(/\d+\.+/g, '').trim();
+            const moves = clean.split(/\s+/);
+            let castled = false;
+            for (let i = 0; i < moves.length; i++) {
+                // If White, indices 0, 2, 4... If Black, 1, 3, 5...
+                const isUserMove = isWhite ? (i % 2 === 0) : (i % 2 !== 0);
+                if (isUserMove) {
+                    if (moves[i] === 'O-O') {
+                        castling.kingside++;
+                        castled = true;
+                        break;
+                    } else if (moves[i] === 'O-O-O') {
+                        castling.queenside++;
+                        castled = true;
+                        break;
+                    }
+                }
+            }
+            if (!castled) castling.noCastle++;
+        }
+
         // --- TIME & DATES ---
         if (game.end_time) {
-            // Collect unique days for daily streak calculation
             const dayDate = new Date(game.end_time * 1000).toISOString().split('T')[0];
             uniqueDays.add(dayDate);
         }
@@ -136,24 +230,19 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         variantCounts[modeName] = (variantCounts[modeName] || 0) + 1;
     });
 
-    // --- CALCULATE LONGEST DAILY STREAK ---
+    // --- DAILY STREAK ---
     const sortedDays = Array.from(uniqueDays).sort();
     let longestDailyStreak = 0;
     let tempDaily = 0;
-
     for (let i = 0; i < sortedDays.length; i++) {
         if (i > 0) {
             const prev = new Date(sortedDays[i-1]);
             const curr = new Date(sortedDays[i]);
-            // Calculate difference in days
             const diffTime = Math.abs(curr.getTime() - prev.getTime());
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays === 1) {
-                tempDaily++;
-            } else {
-                tempDaily = 1;
-            }
+            if (diffDays === 1) tempDaily++;
+            else tempDaily = 1;
         } else {
             tempDaily = 1;
         }
@@ -180,6 +269,11 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         drawMethods: sortMethods(drawMethods),
         checkmateByPiece: Object.entries(checkmateCounts)
             .map(([piece, count]) => ({ piece, count }))
-            .sort((a, b) => b.count - a.count)
+            .sort((a, b) => b.count - a.count),
+        longestGame,
+        shortestGame,
+        biggestUpset,
+        fastestWin,
+        castling
     };
 }
