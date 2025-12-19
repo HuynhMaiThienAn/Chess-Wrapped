@@ -41,7 +41,7 @@ export async function fetchUserGames(username: string, year: string): Promise<Ch
                 .eq('username', username)
                 .eq('year', year)
                 .eq('month', month)
-                .single();
+                .single() as any;
 
             let shouldUseCache = false;
 
