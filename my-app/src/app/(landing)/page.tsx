@@ -151,7 +151,7 @@ export default function LandingPage() {
                                         value={username}
                                         onChange={handleInputChange}
                                         disabled={isLoading}
-                                        className="w-full bg-transparent border-none text-center text-3xl font-bold text-white focus:outline-none placeholder:text-[#3e3c39] py-3 px-2 lowercase disabled:opacity-50"
+                                        className="w-full bg-transparent border-none text-center text-3xl font-bold text-white focus:outline-none placeholder:text-[#3e3c39] py-3 px-2 disabled:opacity-50"
                                         placeholder="username"
                                         autoComplete="off"
                                         autoCorrect="off"
@@ -190,7 +190,7 @@ export default function LandingPage() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
-                                                className="text-[#52525b] font-bold text-sm"
+                                                className="text-[#ffffff] text-1xl"
                                             >
                                                 (type your chess.com username!)
                                             </motion.p>
