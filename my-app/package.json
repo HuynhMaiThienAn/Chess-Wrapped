@@ -27,7 +27,8 @@
     "react-dom": "19.2.0",
     "rechart": "^0.0.1",
     "recharts": "^3.5.1",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
