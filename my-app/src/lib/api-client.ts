@@ -10,11 +10,9 @@ const apiClient = axios.create({
     baseURL: BASE_URL,
     headers: {
         'Content-Type': 'application/json',
-        'User-Agent': '/1.0(contact: huynhmaithienan.2005@gmail.com)'
+        'User-Agent': '/1.0 (contact: huynhmaithienan.2005@gmail.com)'
     },
-    timeout: 30000,
-    maxContentLength: Infinity,
-    maxBodyLength: Infinity
+    timeout: 10000 // wait for 10s cuz why not
 })
 
 // generic API function
