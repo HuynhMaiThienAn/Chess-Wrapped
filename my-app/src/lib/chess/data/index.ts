@@ -5,6 +5,8 @@ import { db } from '@/lib/db';
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const MIN_GAMES_TO_CACHE = 300;
+
 export async function getUserProfile(username: string): Promise<User> {
     try {
         const rawProfile = await fetchers.fetchRawProfile(username);
@@ -79,15 +81,22 @@ export async function fetchUserGames(username: string, year: string): Promise<Ch
 
                 allGames.push(...data.games);
 
-                // 3. UPSERT TO DATABASE
-                await (db.from('game_archives') as any).upsert({
-                    username: username,
-                    year: year,
-                    month: month,
-                    games: data.games,
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'username, year, month' });
-                await sleep(200);
+                // Only cache if the month is "heavy"
+                if (data.games.length >= MIN_GAMES_TO_CACHE) {
+                    console.log(`Caching LARGE month for ${username}: ${data.games.length} games`);
+
+                    await (db.from('game_archives') as any).upsert({
+                        username: username,
+                        year: year,
+                        month: month,
+                        games: data.games,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'username, year, month' });
+
+                    await sleep(200); // Rate limit protection for DB writes
+                } else {
+                    console.log(`Skipping cache for ${username}: ${data.games.length} games (Threshold: ${MIN_GAMES_TO_CACHE})`);
+                }
 
             } catch (err: any) {
                 console.warn(`Failed to fetch ${url}: ${err.message}`);
