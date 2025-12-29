@@ -3,7 +3,7 @@
 import { Clock, Rocket, Zap, Swords, Hourglass } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
-import StoryCard from '@/components/ui/StoryCard';
+import StoryCard from '@/components/shared/StoryCard';
 import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
 import { useChessStats } from '@/context/ChessContext';
 
@@ -44,7 +44,7 @@ const RANK_COLORS = ['#81b64c', '#989795', '#ca3431'];
 export default function TotalGamesSlide() {
     const { stats: data } = useChessStats();
 
-    // --- 1. CALCULATE WIN/LOSS/DRAW DATA ---
+    
     const total = data.totalGames > 0 ? data.totalGames : 1;
     const winPct = ((data.wins / total) * 100).toFixed(1);
     const drawPct = ((data.draws / total) * 100).toFixed(1);
@@ -53,7 +53,7 @@ export default function TotalGamesSlide() {
     const winW = parseFloat(winPct) > 0 ? `${Math.max(parseFloat(winPct), 2)}%` : '0%';
     const drawW = parseFloat(drawPct) > 0 ? `${Math.max(parseFloat(drawPct), 2)}%` : '0%';
 
-    // --- 2. CALCULATE VARIANT DATA (SORTED) ---
+    
     const getVariantCount = (name: string) => data.gamesByVariant.find(v => v.name === name)?.count || 0;
 
     const variants = [

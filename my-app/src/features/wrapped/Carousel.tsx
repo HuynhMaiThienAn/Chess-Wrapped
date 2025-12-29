@@ -26,7 +26,7 @@ export default function Carousel() {
     const { stats: data } = useChessStats();
     const [currentStep, setCurrentStep] = useState(0);
 
-    // --- AUDIO LOGIC ---
+    
     const clickSoundRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {

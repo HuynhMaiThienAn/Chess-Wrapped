@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from '@/components/ui/Header';
+import Header from '@/components/layout/Header';
 
 export default function LandingLayout({
                                           children,

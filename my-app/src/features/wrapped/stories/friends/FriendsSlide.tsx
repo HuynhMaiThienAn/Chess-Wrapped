@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Users, Heart, Swords, Trophy, Crown } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
-import StoryCard from '@/components/ui/StoryCard';
+import StoryCard from '@/components/shared/StoryCard';
 import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
 import { useChessStats } from '@/context/ChessContext';
 
