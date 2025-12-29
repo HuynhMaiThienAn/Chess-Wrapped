@@ -31,9 +31,8 @@ export function getOpeningFromPGN(pgn: string | undefined): string {
     if (urlMatch && urlMatch[1]) {
         const parts = urlMatch[1].split('/');
         let slug = parts[parts.length - 1];
-        // Strip trailing move sequences from URL slug.
-        // Assume moves start with a number (e.g. -6.Bg5) and strip everything from there.
-        slug = slug.replace(/-[0-9]+\..*$/, '');
+        // Strip trailing move sequences from URL slug
+        slug = slug.replace(/(-[0-9]+-[a-zA-Z0-9]+)+$/g, '');
         name = decodeURIComponent(slug).replace(/-/g, ' ');
     }
     // 2. Fallback to Opening Tag
@@ -46,7 +45,7 @@ export function getOpeningFromPGN(pgn: string | undefined): string {
 
     if (!name || name === 'Unknown') return 'Unknown';
 
-
+    // --- CLEANUP PIPELINE ---
 
     // 1. Remove "Variation"
     name = name.replace(/\bVariation\b/gi, '');
