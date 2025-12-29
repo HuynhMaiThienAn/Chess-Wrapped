@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { Github, MessageSquare, Heart, Trophy, Zap, Target, Home, Instagram, Coffee, Star } from 'lucide-react';
-import StoryCard from '@/components/shared/StoryCard';
+import StoryCard from '@/components/ui/StoryCard';
 import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
 import { useChessStats } from '@/context/ChessContext';
 

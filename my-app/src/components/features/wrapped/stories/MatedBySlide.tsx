@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Skull, ChessQueen, ChessRook, ChessBishop, ChessKnight, ChessPawn } from 'lucide-react';
-import StoryCard from '@/components/shared/StoryCard';
+import StoryCard from '@/components/ui/StoryCard';
 import { StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
 import { useChessStats } from '@/context/ChessContext';
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, ArrowUp, ArrowDown, Minus, Crown } from 'lucide-react';
 import { LineChart, Line, Tooltip, ResponsiveContainer, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
-import StoryCard from '@/components/shared/StoryCard';
+import StoryCard from '@/components/ui/StoryCard';
 import { StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
 import { useChessStats } from '@/context/ChessContext';
 
@@ -44,7 +44,7 @@ export default function EloGraphSlide() {
         });
     }, [data.eloHistory]);
 
-    
+    // --- 2. SORTING LOGIC (By Current Rating: Highest -> Lowest) ---
     const sortedModes = useMemo(() => {
         const modes = ['Blitz', 'Rapid', 'Bullet'] as const;
 
@@ -60,7 +60,7 @@ export default function EloGraphSlide() {
         return [...modes].sort((a, b) => getLatestRating(b) - getLatestRating(a));
     }, [fullHistory]);
 
-    
+    // --- 3. STATS CALCULATION ---
     const getMinMax = (key: 'Blitz' | 'Rapid' | 'Bullet') => {
         const values = fullHistory.map(h => h[key]).filter(v => v !== null) as number[];
         if (values.length === 0) return { min: 0, max: 0 };

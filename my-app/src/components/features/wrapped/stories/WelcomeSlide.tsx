@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Crown, Trophy, Sparkles, Star, Calendar, ChevronRight } from 'lucide-react';
 import { useRef, useEffect } from 'react';
-import StoryCard from '@/components/shared/StoryCard';
+import StoryCard from '@/components/ui/StoryCard';
 import { itemVariants, containerVariants } from './shared/animations';
 import { CONTAINERS, TYPOGRAPHY } from './shared/styles';
 import { useChessStats } from '@/context/ChessContext';

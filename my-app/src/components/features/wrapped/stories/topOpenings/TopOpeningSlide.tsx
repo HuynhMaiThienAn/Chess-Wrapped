@@ -1,14 +1,30 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { AlertTriangle, TrendingDown, ShieldAlert } from 'lucide-react';
-import { useRef, useEffect, useState } from 'react';
-import StoryCard from '@/components/shared/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
+import { Swords, Castle, Target } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react'; // Added hooks
+import StoryCard from '@/components/ui/StoryCard';
+import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
 import { useChessStats } from '@/context/ChessContext';
 
-const COLORS = ['#ca3431', '#d64a31', '#e06531', '#ea7e31', '#989795'];
+// Colors for the bars
+const COLORS = ['#81b64c', '#ffc800', '#ebecd0', '#ca3431', '#7c7b79', '#3e3c39'];
 
+const getOpeningComment = (openingName: string) => {
+    const name = openingName.toLowerCase();
+
+    if (name.includes('sicilian')) return "Aggressive play style >:)";
+    if (name.includes('london')) return "PLs play Queen Gambit instead (me see London me resign)";
+    if (name.includes('caro')) return "Did you sac a rook yet? :)";
+    if (name.includes('french')) return "You love counter attack, don't u?";
+    if (name.includes('italian')) return "You love theory moves :>";
+    if (name.includes('king\'s indian')) return "You love solid position, don't u?";
+    if (name.includes('scandinavian')) return "me see pawn me take :D";
+
+    return "A unique style that only u played :D";
+};
+
+// 👇 1. New Helper Component: Auto-Scales text to fit width
 const AutoFitText = ({ text }: { text: string }) => {
     const textRef = useRef<HTMLSpanElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -39,7 +55,6 @@ const AutoFitText = ({ text }: { text: string }) => {
         return () => window.removeEventListener('resize', resizeText);
     }, [text]);
 
-
     return (
         <div ref={containerRef} className="w-full overflow-hidden flex items-center">
             <span
@@ -53,80 +68,77 @@ const AutoFitText = ({ text }: { text: string }) => {
     );
 };
 
-export default function WorstOpeningSlide() {
+export default function TopOpeningSlide() {
     const { stats: data } = useChessStats();
 
-    // 1. Merge White & Black Worst Openings
-    const allWorst = [
-        ...data.worstOpeningsWhite,
-        ...data.worstOpeningsBlack
-    ];
+    // 1. Merge & Sort
+    const allOpenings = [
+        ...data.topOpeningsWhite,
+        ...data.topOpeningsBlack
+    ].sort((a, b) => b.count - a.count);
 
-    // 2. Sort by Win Rate (Ascending: Lowest WR is "Worst")
-    // If Win Rates are equal, prioritize ones with MORE games (higher count)
-    allWorst.sort((a, b) => {
-        if (a.winRate === b.winRate) return b.count - a.count;
-        return a.winRate - b.winRate;
-    });
+    // 2. Prepare Data
+    const top5 = allOpenings.slice(0, 5);
+    const totalGames = data.totalGames || 1;
 
-    // 3. Take Top 5
-    const top5Worst = allWorst.slice(0, 7);
-
-    // 4. Prepare Chart Data
-    // For "Worst" Openings, the Bar Width represents WIN RATE.
-    // A small bar = Low Win Rate (Bad).
-    const chartData = top5Worst.map(op => ({
+    const chartData = top5.map(op => ({
         name: op.name,
-        count: op.count,
-        winRate: op.winRate
+        value: op.count,
+        percentOfTotal: (op.count / totalGames) * 100
     }));
 
-    const worstName = top5Worst.length > 0 ? top5Worst[0].name : "None";
+    const topOpeningName = top5.length > 0 ? top5[0].name : "Unknown";
+
+    const maxVal = chartData.length > 0 ? chartData[0].value : 1;
 
     return (
-        <StoryCard id="slide-worst" className={CONTAINERS.slideCard}>
+        <StoryCard id="slide-top-openings" className={CONTAINERS.slideCard}>
             <StoryBackground>
-                <div className="absolute top-10 right-10 text-red-500 opacity-5"><AlertTriangle size={60} /></div>
-                <div className="absolute bottom-10 left-10 text-red-500 opacity-5"><ShieldAlert size={50} /></div>
+                <div className="absolute top-10 left-10 text-white opacity-5"><Swords size={50} /></div>
+                <div className="absolute bottom-10 right-10 text-white opacity-5"><Target size={40} /></div>
             </StoryBackground>
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
-                {/* Header: Avatar + Title */}
+                {/* 1. Header */}
                 <motion.div variants={itemVariants} className="w-full flex justify-start items-center px-4 mb-4 z-10">
-                    <div className=" bg-white rounded-full shadow-lg mr-3">
+                    <div className="bg-white rounded-full shadow-lg mr-3">
                         <img
                             src={data.avatarUrl}
                             alt={data.username}
-                            className="w-12 h-12 rounded-full object-cover border-4 border-[#81b64c]"
+                            className="w-14 h-12 rounded-full object-cover border-4 border-[#81b64c]"
                         />
                     </div>
                     <h2 className="text-2xl font-bold text-white drop-shadow-md">
-                        Your weakness :(
+                        Favorite Openings
                     </h2>
                 </motion.div>
 
-                {/* Horizontal Bar Graph */}
+                {/* 2. Horizontal Bar Graph */}
                 <motion.div
                     variants={itemVariants}
-                    className="w-full px-6 flex flex-col gap-4 z-10 mb-2 overflow-hidden max-h-[350px]"
+                    className="w-full px-1 flex flex-col gap-4 z-10 mb-2 overflow-hidden max-h-[350px]"
                 >
                     {chartData.map((item, idx) => {
-                        // Bar Width = Win Rate.
-                        // If WR is 0, give it 5% so it's visible.
-                        let relativeWidth = Math.max(item.winRate, 5);
+                        // Calculate width relative to your #1 opening
+                        let relativeWidth = (item.value / maxVal) * 100;
+                        if (relativeWidth > 100) relativeWidth = 100;
 
                         return (
                             <div key={idx} className="w-full">
+                                {/* Label Row */}
                                 <div className="flex justify-between items-end mb-1 w-full">
                                     <div className="flex-1 min-w-0 mr-2">
                                         <AutoFitText text={item.name} />
                                     </div>
+
                                     <span className="text-[#989795] text-[10px] font-mono whitespace-nowrap shrink-0">
-                                        {item.count} games <span className="text-red-400 font-bold">({item.winRate}%)</span>
+                                        {item.value} <span className="opacity-50">({item.percentOfTotal.toFixed(1)}%)</span>
                                     </span>
                                 </div>
-                                <div className="w-full h-3 bg-[#262421] rounded-full border border-[#3e3c39]">
+
+                                {/* Bar Container */}
+                                <div className="w-full h-3 bg-[#262421] rounded-full overflow-hidden border border-[#3e3c39]">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${relativeWidth}%` }}
@@ -141,9 +153,15 @@ export default function WorstOpeningSlide() {
 
                     {chartData.length === 0 && (
                         <div className="text-center text-[#989795] italic py-10">
-                            No significant data found.
+                            No opening data found.
                         </div>
                     )}
+                </motion.div>
+
+                <motion.div variants={itemVariants} className="z-10 px-4 mb-2 mt-3">
+                    <div className={TYPOGRAPHY.comment}>
+                        "{getOpeningComment(topOpeningName)}"
+                    </div>
                 </motion.div>
 
             </motion.div>

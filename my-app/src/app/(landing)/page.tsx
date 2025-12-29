@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, ChessKing, ChessQueen, ChessRook, ChessBishop, ChessKnight, ChessPawn, AlertTriangle, X } from 'lucide-react';
 
-
+// --- GLOBAL AUDIO VARIABLE ---
 
 export default function LandingPage() {
     const router = useRouter();
@@ -14,11 +14,11 @@ export default function LandingPage() {
     const [error, setError] = useState<string | null>(null); // State for error popup
     const inputRef = useRef<HTMLInputElement>(null);
 
-    
+    // --- Sound Effects Refs ---
     const typeSoundRef = useRef<HTMLAudioElement | null>(null);
     const startSoundRef = useRef<HTMLAudioElement | null>(null);
 
-    
+    // --- 2. HANDLE SOUND EFFECTS ---
     useEffect(() => {
         inputRef.current?.focus();
         typeSoundRef.current = new Audio('/hover.mp3');
@@ -47,7 +47,7 @@ export default function LandingPage() {
         playTypeSound();
     };
 
-    
+    // --- 3. SUBMIT & VALIDATION LOGIC ---
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!username.trim()) return;

@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { generateWrappedStats } from '@/lib/chess';
-import Carousel from '@/features/wrapped/Carousel';
+import Carousel from '@/components/features/wrapped/Carousel';
 import Button from '@/components/ui/Button';
 import Link from 'next/link';
+// 👇 Import Provider
 import { ChessProvider } from '@/context/ChessContext';
 
 interface PageProps {
@@ -42,6 +43,7 @@ export default async function UserWrappedPage({ params }: PageProps) {
         }
 
         return (
+            // 👇 WRAPPED IN PROVIDER
             <ChessProvider stats={stats}>
                 <Carousel />
             </ChessProvider>
