@@ -1,75 +1,7 @@
 import { ChessGame } from '@/types';
 import { getPgnTag } from '../util';
-
-const formatResult = (result: string): string => {
-    switch (result) {
-        case 'win': return 'Win';
-        case 'checkmated': return 'Checkmate';
-        case 'agreed': return 'Agreement';
-        case 'repetition': return 'Repetition';
-        case 'timeout': return 'Timeout';
-        case 'resigned': return 'Resignation';
-        case 'stalemate': return 'Stalemate';
-        case 'insufficient': return 'Insufficient Material';
-        case '50move': return '50 Move Rule';
-        case 'abandoned': return 'Abandonment';
-        case 'time': return 'Timeout';
-        case 'kingofthehill': return 'KOTH';
-        case 'threecheck': return 'Three Check';
-        case 'bughouse': return 'Bughouse';
-        case 'crazyhouse': return 'Crazyhouse';
-        default: return 'Other';
-    }
-};
-
-const getPieceFromMove = (move: string): string => {
-    const cleanMove = move.replace(/[+#x]/g, '');
-    if (cleanMove.startsWith('N')) return 'Knight';
-    if (cleanMove.startsWith('B')) return 'Bishop';
-    if (cleanMove.startsWith('R')) return 'Rook';
-    if (cleanMove.startsWith('Q')) return 'Queen';
-    if (cleanMove.startsWith('K')) return 'King';
-    if (cleanMove.startsWith('O')) return 'Rook';
-    return 'Pawn';
-};
-
-// Robust helper to count moves
-const calculateMoveCount = (pgn: string): number => {
-    if (!pgn) return 0;
-
-    // 1. Clean up PGN
-    let clean = pgn
-        // Remove timestamps/comments { ... }
-        .replace(/\{[^}]+\}/g, '')
-        // Remove variations ( ... ) - basic handling for non-nested
-        .replace(/\([^)]+\)/g, '')
-        // Remove NAGs $1, $2
-        .replace(/\$\d+/g, '')
-        // Remove Result at end
-        .replace(/(1-0|0-1|1\/2-1\/2|\*)$/, '')
-        .trim();
-
-    // 2. Try to find the last move number (e.g. "45." or "45...")
-    // This is generally most accurate for standard PGNs
-    const moveNumberMatches = clean.match(/(\d+)\.+/g);
-
-    if (moveNumberMatches && moveNumberMatches.length > 0) {
-        const lastMatch = moveNumberMatches[moveNumberMatches.length - 1];
-        const num = parseInt(lastMatch.replace(/\.+/, ''));
-        if (!isNaN(num) && num > 0) return num;
-    }
-
-    // 3. Fallback: Token Counting (if numbering is broken)
-    // Remove move numbers to count tokens (e4, e5, Nf3)
-    clean = clean.replace(/\d+\.+/g, ' ');
-    const tokens = clean.split(/\s+/).filter(t => t.length > 0);
-    return Math.ceil(tokens.length / 2);
-};
-
-// Types for local trackers
-type GameHighlight = { opponent: string; moves: number; result: string; date: string; url: string; };
-type UpsetHighlight = { opponent: string; ratingDiff: number; myElo: number; opponentElo: number; date: string; url: string; };
-type SpeedHighlight = { opponent: string; moves: number; date: string; url: string; };
+import { formatResult, getPieceFromMove, calculateMoveCount } from './utils';
+import { GameHighlight, UpsetHighlight, SpeedHighlight } from './types';
 
 export function analyzeGeneral(games: ChessGame[], username: string) {
     let wins = 0;
@@ -107,15 +39,12 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         const opponentSide = isWhite ? game.black : game.white;
         const result = userSide.result;
 
-        // --- CALCULATE MOVE COUNT ---
         let moveCount = 0;
         if (game.pgn) {
             moveCount = calculateMoveCount(game.pgn);
         }
 
-        // --- CHECKMATE ANALYSIS ---
         if (userSide.result === 'checkmated' && game.pgn) {
-            // Clean simple PGN for piece extraction
             const cleanPgn = game.pgn
                 .replace(/\{[^}]+\}/g, '')
                 .replace(/1-0|0-1|1\/2-1\/2/g, '')
@@ -128,7 +57,6 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             }
         }
 
-        // --- STREAKS & STATS ---
         if (result === 'win') {
             wins++;
             const opponentRes = isWhite ? game.black.result : game.white.result;
@@ -139,7 +67,6 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             currentLossStreak = 0;
             if (currentWinStreak > longestWinStreak) longestWinStreak = currentWinStreak;
 
-            // Upset
             const myElo = userSide.rating;
             const opElo = opponentSide.rating;
             const diff = opElo - myElo;
@@ -170,7 +97,6 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             if (currentLossStreak > longestLossStreak) longestLossStreak = currentLossStreak;
         }
 
-        // --- GAME LENGTH & HIGHLIGHTS ---
         if (moveCount > 0) {
             const gameData = {
                 opponent: opponentSide.username,
@@ -180,22 +106,17 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
                 url: game.url
             };
 
-            // Longest Game
             if (!longestGame || moveCount > longestGame.moves) {
                 longestGame = gameData;
             }
 
-            // Shortest Game
-            // Strictly exclude abandoned/aborted games and 0-move games
             const invalidShortResults = ['abandoned', 'aborted', 'unknown'];
             if (!invalidShortResults.includes(userSide.result) && moveCount > 0) {
-                // Also optionally ignore draws < 2 moves if you want strictly played games
                 if (!shortestGame || moveCount < shortestGame.moves) {
                     shortestGame = gameData;
                 }
             }
 
-            // Fastest Win
             if (result === 'win' && moveCount > 0) {
                 if (!fastestWin || moveCount < (fastestWin as SpeedHighlight).moves) {
                     fastestWin = {
@@ -208,7 +129,6 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             }
         }
 
-        // --- CASTLING ---
         if (game.pgn) {
             const clean = game.pgn.replace(/\{[^}]+\}/g, '').replace(/\d+\.+/g, '').trim();
             const moves = clean.split(/\s+/);
@@ -230,7 +150,6 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
             if (!castled) castling.noCastle++;
         }
 
-        // --- TIME ---
         if (game.end_time) {
             const dayDate = new Date(game.end_time * 1000).toISOString().split('T')[0];
             uniqueDays.add(dayDate);
@@ -255,13 +174,12 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         variantCounts[modeName] = (variantCounts[modeName] || 0) + 1;
     });
 
-    // --- DAILY STREAK ---
     const sortedDays = Array.from(uniqueDays).sort();
     let longestDailyStreak = 0;
     let tempDaily = 0;
     for (let i = 0; i < sortedDays.length; i++) {
         if (i > 0) {
-            const prev = new Date(sortedDays[i-1]);
+            const prev = new Date(sortedDays[i - 1]);
             const curr = new Date(sortedDays[i]);
             const diffTime = Math.abs(curr.getTime() - prev.getTime());
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
