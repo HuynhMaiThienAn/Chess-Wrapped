@@ -1,5 +1,6 @@
 import { ChessGame, OpeningStat } from '@/types';
-import { getOpeningFromPGN, calculateWinRate } from '../util';
+import { getOpeningFromPGN } from '../utils/opening-utils';
+import { calculateWinRate } from '../utils/calculation-utils';
 
 interface RawOpening {
     wins: number;
