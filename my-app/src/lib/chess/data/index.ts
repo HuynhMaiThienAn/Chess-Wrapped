@@ -1,11 +1,10 @@
 import { User, ChessGame } from '@/types';
 import * as fetchers from './fetcher';
 import * as mappers from './mapper';
-import { db } from '@/lib/db';
+import { checkCache, writeCache } from './cache';
+import { MIN_GAMES_TO_CACHE, RATE_LIMIT_DELAY_MS } from './constants';
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-const MIN_GAMES_TO_CACHE = 300;
 
 export async function getUserProfile(username: string): Promise<User> {
     try {
@@ -27,50 +26,23 @@ export async function fetchUserGames(username: string, year: string): Promise<Ch
 
         const allGames: ChessGame[] = [];
 
-        // Helper to check if a month is the current real-world month
-        const now = new Date();
-        const currentYearStr = now.getFullYear().toString();
-        const currentMonthStr = String(now.getMonth() + 1).padStart(2, '0');
-
         for (const url of yearUrls) {
             const parts = url.split('/');
             const month = parts[parts.length - 1];
 
-            // 1. CHECK DATABASE (CACHE)
-            const { data: cached } = await db
-                .from('game_archives')
-                .select('games, updated_at')
-                .eq('username', username)
-                .eq('year', year)
-                .eq('month', month)
-                .single() as any;
+            // 1. CHECK CACHE
+            const cacheResult = await checkCache(username, year, month);
 
-            let shouldUseCache = false;
+            if (cacheResult.shouldUseCache && cacheResult.data) {
+                const now = new Date();
+                const currentYearStr = now.getFullYear().toString();
+                const currentMonthStr = String(now.getMonth() + 1).padStart(2, '0');
+                const isCurrentMonth = year === currentYearStr && month === currentMonthStr;
 
-            if (cached && cached.games) {
-                // A. Past months: Always safe to cache
-                if (year !== currentYearStr || month !== currentMonthStr) {
-                    shouldUseCache = true;
-                }
-                // B. Current month < 12 hours old
-                else {
-                    const lastUpdate = new Date(cached.updated_at).getTime();
-                    const hoursSinceUpdate = (Date.now() - lastUpdate) / (1000 * 60 * 60);
-
-                    if (hoursSinceUpdate < 12) {
-                        shouldUseCache = true;
-                        console.log(`Cache HIT (Fresh): ${month}/${year}`);
-                    } else {
-                        console.log(`Cache STALE (>12h old): ${month}/${year} - Refetching...`);
-                    }
-                }
-            }
-
-            if (shouldUseCache && cached) {
-                if (year !== currentYearStr || month !== currentMonthStr) {
+                if (!isCurrentMonth) {
                     console.log(`Cache HIT (Archive): ${month}/${year}`);
                 }
-                allGames.push(...cached.games);
+                allGames.push(...cacheResult.data);
                 continue;
             }
 
@@ -83,23 +55,15 @@ export async function fetchUserGames(username: string, year: string): Promise<Ch
 
                 // Only cache if the month is "heavy"
                 if (data.games.length >= MIN_GAMES_TO_CACHE) {
-                    console.log(`Caching LARGE month for ${username}: ${data.games.length} games`);
-
-                    await (db.from('game_archives') as any).upsert({
-                        username: username,
-                        year: year,
-                        month: month,
-                        games: data.games,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'username, year, month' });
-
-                    await sleep(200); // Rate limit protection for DB writes
+                    await writeCache(username, year, month, data.games);
+                    await sleep(RATE_LIMIT_DELAY_MS);
                 } else {
                     console.log(`Skipping cache for ${username}: ${data.games.length} games (Threshold: ${MIN_GAMES_TO_CACHE})`);
                 }
 
-            } catch (err: any) {
-                console.warn(`Failed to fetch ${url}: ${err.message}`);
+            } catch (err: unknown) {
+                const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+                console.warn(`Failed to fetch ${url}: ${errorMessage}`);
             }
         }
 
