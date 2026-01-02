@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion';
 import { Crown, Trophy, Sparkles, Star, Calendar, ChevronRight } from 'lucide-react';
 import { useRef, useEffect } from 'react';
-import StoryCard from '@/components/ui/StoryCard';
-import { itemVariants, containerVariants } from './shared/animations';
-import { CONTAINERS, TYPOGRAPHY } from './shared/styles';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { itemVariants, containerVariants } from '@/components/shared/animations';
+import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
-import { StoryBackground } from './shared';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 
 // Helper for AutoFit Text (Kept as is, it's good logic)
 const AutoFitText = ({ text }: { text: string }) => {

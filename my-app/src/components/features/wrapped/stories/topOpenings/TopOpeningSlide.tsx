@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import { Swords, Castle, Target } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react'; // Added hooks
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
 
 // Colors for the bars

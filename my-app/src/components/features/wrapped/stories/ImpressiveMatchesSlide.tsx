@@ -1,9 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {Crown, Swords, Skull, ExternalLink, ChessKingIcon} from 'lucide-react';
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryHeader, StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
+import { Crown, Swords, Skull, ExternalLink, ChessKingIcon } from 'lucide-react';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground, StoryHeader } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
 
 const defaultAvatar = 'https://www.chess.com/bundles/web/images/user-image.svg';
@@ -34,8 +36,8 @@ export default function ImpressiveMatchesSlide() {
             >
                 {/* 1. Header */}
                 <StoryHeader
-                    icon={<ChessKingIcon />}
-                    iconColor="text-[#ffc800]"
+                    icon={Crown}
+                    iconColor="#ffc800"
                     title="Impressive Matches"
                 />
 

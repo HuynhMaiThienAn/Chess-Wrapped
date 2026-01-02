@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { Hourglass, Zap, ExternalLink, Timer, Swords } from 'lucide-react';
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
 
 export default function GameLengthSlide() {

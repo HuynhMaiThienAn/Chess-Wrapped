@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import { AlertTriangle, TrendingDown, ShieldAlert } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
 
 const COLORS = ['#ca3431', '#d64a31', '#e06531', '#ea7e31', '#989795'];
