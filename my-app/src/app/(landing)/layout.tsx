@@ -1,9 +1,9 @@
 import React from 'react';
-import Header from '@/components/ui/Header';
+import Header from '@/components/ui/Header/Header';
 
 export default function LandingLayout({
-                                          children,
-                                      }: {
+    children,
+}: {
     children: React.ReactNode;
 }) {
     return (

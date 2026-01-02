@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { generateWrappedStats } from '@/lib/chess';
-import Carousel from '@/components/features/wrapped/Carousel';
-import Button from '@/components/ui/Button';
+import Carousel from '@/components/organisms/Carousel';
+import Button from '@/components/ui/Button/Button';
 import Link from 'next/link';
 // 👇 Import Provider
 import { ChessProvider } from '@/context/ChessContext';
