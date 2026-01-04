@@ -101,7 +101,7 @@ export default function TotalGamesSlide() {
                         <img
                             src={data.avatarUrl}
                             alt={data.username}
-                            className="w-20 h-15 rounded-full object-cover border-4 border-[#81b64c]"
+                            className="w-20 h-20 rounded-full object-cover border-4 border-[#81b64c]"
                         />
                     </div>
                     <h2 className="text-2xl font-bold text-white drop-shadow-md">
