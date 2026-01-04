@@ -22,7 +22,7 @@ export function useUsernameValidation(): UseUsernameValidationReturn {
 
     // Rate-limited validation (2 second cooldown, max 5 attempts)
     const rateLimitedValidate = useRateLimit(
-        ChessValidationService.validateComplete,
+        (username: string, year?: number) => ChessValidationService.validateComplete(username, year),
         { delayMs: 2000, maxAttempts: 5 }
     );
 
