@@ -27,5 +27,3 @@ export const ERROR_MESSAGES = {
         GAMES_FAILED: 'Failed to fetch games',
     },
 } as const;
-
-export type ErrorMessageKey = keyof typeof ERROR_MESSAGES;

@@ -69,19 +69,3 @@ export function generateDefaultMetadata(): Metadata {
     };
 }
 
-/**
- * Generate metadata for landing page
- */
-export function generateLandingMetadata(): Metadata {
-    return {
-        title: 'Chess Wrapped 2025 - Your Year in Chess',
-        description: 'Discover your chess journey in 2025. View your stats, achievements, and progress beautifully visualized.',
-        keywords: ['chess wrapped', 'chess statistics', 'chess.com stats', 'chess analytics'],
-        openGraph: {
-            title: 'Chess Wrapped 2025',
-            description: 'Discover your chess journey',
-            images: ['/og-image.jpg'],
-            type: 'website',
-        },
-    };
-}
