@@ -103,13 +103,6 @@ export default function WelcomeSlide() {
 
                 {/* 2. Avatar Area */}
                 <motion.div variants={itemVariants} className="relative mb-8">
-                    {/* Pulsing Glow Behind Avatar */}
-                    <motion.div
-                        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.2, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute inset-0 bg-white blur-xl rounded-full"
-                    />
-
                     <div className="relative p-2 bg-white rounded-full shadow-2xl rotate-3">
                         <img
                             src={data.avatarUrl}

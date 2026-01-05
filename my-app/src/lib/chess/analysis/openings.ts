@@ -16,12 +16,16 @@ export function analyzeOpenings(games: ChessGame[], username: string) {
     const lowerUsername = username.toLowerCase();
 
     // Helper to process a single game record
-    const process = (record: Record<string, RawOpening>, name: string, won: boolean, elo: number) => {
+    const process = (record: Record<string, RawOpening>, name: string, result: string, elo: number) => {
         if (!record[name]) record[name] = { wins: 0, draws: 0, losses: 0, total: 0, highestElo: 0 };
         record[name].total += 1;
-        if (won) {
+        if (result === 'win') {
             record[name].wins += 1;
             if (elo > record[name].highestElo) record[name].highestElo = elo;
+        } else if (['repetition', 'stalemate', 'insufficient', 'agreed', 'time', '50move'].includes(result)) {
+            record[name].draws += 1;
+        } else {
+            record[name].losses += 1;
         }
     };
 
@@ -48,15 +52,15 @@ export function analyzeOpenings(games: ChessGame[], username: string) {
 
         const isWhite = game.white.username.toLowerCase() === lowerUsername;
         const userSide = isWhite ? game.white : game.black;
-        const won = userSide.result === 'win';
+        const result = userSide.result;
         const opponentElo = isWhite ? game.black.rating : game.white.rating;
 
         if (isWhite) {
             uniqueWhite.add(name);
-            process(whiteOps, name, won, opponentElo);
+            process(whiteOps, name, result, opponentElo);
         } else {
             uniqueBlack.add(name);
-            process(blackOps, name, won, opponentElo);
+            process(blackOps, name, result, opponentElo);
         }
     });
 

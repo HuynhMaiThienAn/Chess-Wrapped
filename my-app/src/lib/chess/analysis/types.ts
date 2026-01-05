@@ -4,6 +4,7 @@ export interface GameHighlight {
     result: string;
     date: string;
     url: string;
+    pgn?: string;
 }
 
 export interface UpsetHighlight {
@@ -30,10 +31,5 @@ export interface CastlingStats {
 
 export interface MethodCount {
     name: string;
-    count: number;
-}
-
-export interface CheckmateByPiece {
-    piece: string;
     count: number;
 }

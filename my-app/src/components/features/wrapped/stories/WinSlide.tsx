@@ -6,8 +6,9 @@ import { Trophy } from 'lucide-react';
 import StoryCard from '@/components/ui/Card/StoryCard';
 import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
-import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
+import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
+import SlideHeader from './shared/SlideHeader';
 
 const COLORS = [
     '#81b64c',
@@ -35,19 +36,12 @@ export default function WinTerminationSlide() {
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
-                <motion.div variants={itemVariants} className="w-full flex flex-col justify-start items-center px-4 mb-2 z-10">
-                    <div className="flex items-center justify-center w-full mb-1">
-                        <div className="bg-white rounded-full shadow-lg mr-3">
-                            <img
-                                src={data.avatarUrl}
-                                alt={data.username}
-                                className="w-14 h-14 rounded-full object-cover border-4 border-[#81b64c]"
-                            />
-                        </div>
-                        <h2 className="text-2xl font-black text-white drop-shadow-md leading-none">How did<br/>you win?</h2>
-                    </div>
-                    <p className="text-[#989795] font-bold text-s uppercase tracking-widest mt-3">Total Wins: {total.toLocaleString()}</p>
-                </motion.div>
+                <SlideHeader
+                    avatarUrl={data.avatarUrl}
+                    username={data.username}
+                    title="How did you win?"
+                    subtitle={`Total wins: ${total.toLocaleString()}`}
+                />
 
                 <motion.div variants={itemVariants} className="w-full h-[260px] relative z-10 -my-2">
                     <ResponsiveContainer width="100%" height="100%">
@@ -84,7 +78,7 @@ export default function WinTerminationSlide() {
                     </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="w-full px-6 mt-4 flex flex-col gap-1.5 z-10 overflow-hidden max-h-[160px] custom-scrollbar pb-4">
+                <motion.div variants={itemVariants} className={`${CONTAINERS.slideContent} mt-4 flex flex-col gap-1.5 overflow-hidden max-h-[160px] custom-scrollbar pb-4`}>
                     {chartData.map((item, idx) => (
                         <div key={item.name} className="flex justify-between items-center text-xs py-1 px-2 bg-[#262421] rounded-md border border-[#3e3c39]">
                             <div className="flex items-center gap-2">

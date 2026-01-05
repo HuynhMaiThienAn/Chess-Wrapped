@@ -72,11 +72,11 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
                 moves: moveCount,
                 result: formatResult(userSide.result),
                 date: new Date(game.end_time * 1000).toLocaleDateString(),
-                url: game.url
+                url: game.url,
+                pgn: game.pgn
             };
 
             highlightTracker.updateLongestGame(gameData);
-            highlightTracker.updateShortestGame(gameData, userSide.result);
         }
     });
 
@@ -103,9 +103,7 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         winMethods: gameStats.winMethods,
         lossMethods: gameStats.lossMethods,
         drawMethods: gameStats.drawMethods,
-        checkmateByPiece: gameStats.checkmateByPiece,
         longestGame: highlights.longestGame,
-        shortestGame: highlights.shortestGame,
         biggestUpset: highlights.biggestUpset,
         fastestWin: highlights.fastestWin,
         castling: castlingStats

@@ -1,6 +1,6 @@
 import { ChessGame } from '@/types';
-import { formatResult, getPieceFromMove } from '../helpers/formatters';
-import { MethodCount, CheckmateByPiece } from '../types';
+import { formatResult } from '../helpers/formatters';
+import { MethodCount } from '../types';
 
 export interface GameStatsResult {
     wins: number;
@@ -9,7 +9,6 @@ export interface GameStatsResult {
     winMethods: MethodCount[];
     lossMethods: MethodCount[];
     drawMethods: MethodCount[];
-    checkmateByPiece: CheckmateByPiece[];
 }
 
 /**
@@ -26,7 +25,6 @@ export function analyzeGameStats(
     const winMethods: Record<string, number> = {};
     const lossMethods: Record<string, number> = {};
     const drawMethods: Record<string, number> = {};
-    const checkmateCounts: Record<string, number> = {};
 
     const lowerUsername = username.toLowerCase();
 
@@ -34,20 +32,6 @@ export function analyzeGameStats(
         const isWhite = game.white.username.toLowerCase() === lowerUsername;
         const userSide = isWhite ? game.white : game.black;
         const result = userSide.result;
-
-        // Checkmate analysis
-        if (userSide.result === 'checkmated' && game.pgn) {
-            const cleanPgn = game.pgn
-                .replace(/\{[^}]+\}/g, '')
-                .replace(/1-0|0-1|1\/2-1\/2/g, '')
-                .trim();
-            const moves = cleanPgn.split(/\s+/);
-            const mateMove = moves.find(m => m.includes('#'));
-            if (mateMove) {
-                const piece = getPieceFromMove(mateMove);
-                checkmateCounts[piece] = (checkmateCounts[piece] || 0) + 1;
-            }
-        }
 
         // Count wins, losses, draws and their methods
         if (result === 'win') {
@@ -77,9 +61,6 @@ export function analyzeGameStats(
         draws,
         winMethods: sortMethods(winMethods),
         lossMethods: sortMethods(lossMethods),
-        drawMethods: sortMethods(drawMethods),
-        checkmateByPiece: Object.entries(checkmateCounts)
-            .map(([piece, count]) => ({ piece, count }))
-            .sort((a, b) => b.count - a.count)
+        drawMethods: sortMethods(drawMethods)
     };
 }

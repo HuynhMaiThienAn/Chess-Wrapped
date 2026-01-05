@@ -24,4 +24,7 @@ export const CONTAINERS = {
 
     // The slide itself
     slideCard: "relative w-full h-full flex flex-col items-center",
+
+    // Main content area with padding
+    slideContent: "w-full px-6 z-10",
 };

@@ -1,15 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { AlertTriangle, TrendingDown, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 import StoryCard from '@/components/ui/Card/StoryCard';
 import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
-import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
+import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
-
-const COLORS = ['#ca3431', '#d64a31', '#e06531', '#ea7e31', '#989795'];
+import SlideHeader from './shared/SlideHeader';
 
 const AutoFitText = ({ text }: { text: string }) => {
     const textRef = useRef<HTMLSpanElement>(null);
@@ -22,9 +21,7 @@ const AutoFitText = ({ text }: { text: string }) => {
             const txt = textRef.current;
             if (!container || !txt) return;
 
-            // Reset scale to measure natural size
             txt.style.transform = 'scale(1)';
-
             const containerWidth = container.clientWidth;
             const textWidth = txt.scrollWidth;
 
@@ -35,12 +32,10 @@ const AutoFitText = ({ text }: { text: string }) => {
             }
         };
 
-        // Run initially and on resize
         resizeText();
         window.addEventListener('resize', resizeText);
         return () => window.removeEventListener('resize', resizeText);
     }, [text]);
-
 
     return (
         <div ref={containerRef} className="w-full overflow-hidden flex items-center">
@@ -58,32 +53,18 @@ const AutoFitText = ({ text }: { text: string }) => {
 export default function WorstOpeningSlide() {
     const { stats: data } = useChessStats();
 
-    // 1. Merge White & Black Worst Openings
     const allWorst = [
         ...data.worstOpeningsWhite,
         ...data.worstOpeningsBlack
     ];
 
-    // 2. Sort by Win Rate (Ascending: Lowest WR is "Worst")
-    // If Win Rates are equal, prioritize ones with MORE games (higher count)
     allWorst.sort((a, b) => {
         if (a.winRate === b.winRate) return b.count - a.count;
         return a.winRate - b.winRate;
     });
 
-    // 3. Take Top 5
-    const top5Worst = allWorst.slice(0, 7);
-
-    // 4. Prepare Chart Data
-    // For "Worst" Openings, the Bar Width represents WIN RATE.
-    // A small bar = Low Win Rate (Bad).
-    const chartData = top5Worst.map(op => ({
-        name: op.name,
-        count: op.count,
-        winRate: op.winRate
-    }));
-
-    const worstName = top5Worst.length > 0 ? top5Worst[0].name : "None";
+    const top4Worst = allWorst.slice(0, 4);
+    const totalGames = top4Worst.reduce((sum, op) => sum + op.count, 0);
 
     return (
         <StoryCard id="slide-worst" className={CONTAINERS.slideCard}>
@@ -94,54 +75,74 @@ export default function WorstOpeningSlide() {
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
-                {/* Header: Avatar + Title */}
-                <motion.div variants={itemVariants} className="w-full flex justify-start items-center px-4 mb-4 z-10">
-                    <div className=" bg-white rounded-full shadow-lg mr-3">
-                        <img
-                            src={data.avatarUrl}
-                            alt={data.username}
-                            className="w-12 h-12 rounded-full object-cover border-4 border-[#81b64c]"
-                        />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white drop-shadow-md">
-                        Your weakness :(
-                    </h2>
-                </motion.div>
+                <SlideHeader
+                    avatarUrl={data.avatarUrl}
+                    username={data.username}
+                    title="Your weakness :("
+                    subtitle={`${totalGames} games analyzed`}
+                />
 
-                {/* Horizontal Bar Graph */}
                 <motion.div
                     variants={itemVariants}
-                    className="w-full px-6 flex flex-col gap-4 z-10 mb-2 overflow-hidden max-h-[350px]"
+                    className={`${CONTAINERS.slideContent} flex flex-col gap-5 mb-2 overflow-hidden max-h-[400px]`}
                 >
-                    {chartData.map((item, idx) => {
-                        // Bar Width = Win Rate.
-                        // If WR is 0, give it 5% so it's visible.
-                        let relativeWidth = Math.max(item.winRate, 5);
+                    {top4Worst.map((item, idx) => {
+                        const total = item.count;
+                        const wins = Math.round((item.winRate / 100) * total);
+                        const draws = Math.round((item.drawRate / 100) * total);
+                        const losses = Math.round((item.lossRate / 100) * total);
 
                         return (
                             <div key={idx} className="w-full">
-                                <div className="flex justify-between items-end mb-1 w-full">
+                                <div className="flex justify-between items-end mb-1.5 w-full">
                                     <div className="flex-1 min-w-0 mr-2">
                                         <AutoFitText text={item.name} />
                                     </div>
-                                    <span className="text-[#989795] text-[10px] font-mono whitespace-nowrap shrink-0">
-                                        {item.count} games <span className="text-red-400 font-bold">({item.winRate}%)</span>
-                                    </span>
                                 </div>
-                                <div className="w-full h-3 bg-[#262421] rounded-full border border-[#3e3c39]">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${relativeWidth}%` }}
-                                        transition={{ duration: 1, delay: 0.2 + (idx * 0.1), ease: "easeOut" }}
-                                        className="h-full rounded-full"
-                                        style={{ backgroundColor: COLORS[idx % COLORS.length] }}
-                                    />
+
+                                <div className="flex justify-between items-center mb-1 text-[10px] font-bold">
+                                    <span className="text-[#81b64c]">{item.winRate}% WON</span>
+                                    <span className="text-[#989795]">{item.drawRate}% DRAWN</span>
+                                    <span className="text-[#ca3431]">{item.lossRate}% LOST</span>
+                                </div>
+
+                                <div className="flex justify-between items-center mb-1 text-[10px] font-mono text-[#989795]">
+                                    <span>{wins} won</span>
+                                    <span>{draws} drawn</span>
+                                    <span>{losses} lost</span>
+                                </div>
+
+                                <div className="w-full h-4 bg-[#262421] rounded-lg overflow-hidden border-2 border-[#3e3c39] flex">
+                                    {item.winRate > 0 && (
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${item.winRate}%` }}
+                                            transition={{ duration: 1, delay: 0.2 + (idx * 0.1), ease: "easeOut" }}
+                                            className="h-full bg-[#81b64c]"
+                                        />
+                                    )}
+                                    {item.drawRate > 0 && (
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${item.drawRate}%` }}
+                                            transition={{ duration: 1, delay: 0.3 + (idx * 0.1), ease: "easeOut" }}
+                                            className="h-full bg-[#989795]"
+                                        />
+                                    )}
+                                    {item.lossRate > 0 && (
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${item.lossRate}%` }}
+                                            transition={{ duration: 1, delay: 0.4 + (idx * 0.1), ease: "easeOut" }}
+                                            className="h-full bg-[#ca3431]"
+                                        />
+                                    )}
                                 </div>
                             </div>
                         );
                     })}
 
-                    {chartData.length === 0 && (
+                    {top4Worst.length === 0 && (
                         <div className="text-center text-[#989795] italic py-10">
                             No significant data found.
                         </div>
