@@ -97,7 +97,7 @@ export default function TotalGamesSlide() {
 
                 {/* Header */}
                 <motion.div variants={itemVariants} className="w-full flex justify-start items-center px-4 mb-2 z-10">
-                    <div className=" bg-white rounded-full shadow-lg mr-3">
+                    <div className="w-20 h-20 bg-white rounded-full shadow-lg mr-3 flex-shrink-0">
                         <img
                             src={data.avatarUrl}
                             alt={data.username}
