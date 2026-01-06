@@ -1,126 +1,61 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {Flame, Snowflake, Calendar, Heart, Swords, Trophy, Flag} from 'lucide-react';
+import { Flame, Heart, Swords, Trophy, Flag } from 'lucide-react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
-import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
+import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
-
-// Fire Animation (For Win Streak)
-const AnimatedFire = () => (
-    <div className="relative flex items-center justify-center">
-        <motion.div
-            animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 5, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-            <Flame className="text-[#FF0000] relative z-10 drop-shadow-sm" size={24} fill="#FFAA33" />
-        </motion.div>
-    </div>
-);
-
-// Ice Animation (For Loss Streak)
-const AnimatedIce = () => (
-    <div className="relative flex items-center justify-center">
-        <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        >
-            <Flag className="text-[#ca3431] drop-shadow-sm" size={24} />
-        </motion.div>
-    </div>
-);
-
-// Sun/Day Animation (For Daily Streak)
-const AnimatedDay = () => (
-    <div className="relative flex items-center justify-center">
-        <motion.div
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        >
-            <Calendar className="text-[#eab308] drop-shadow-sm" size={24} />
-        </motion.div>
-    </div>
-);
 
 export default function StreakSlide() {
     const { stats: data } = useChessStats();
 
     return (
         <StoryCard id="slide-streaks" className={CONTAINERS.slideCard}>
-            <StoryBackground>
-                <div className="absolute top-10 right-10 text-white opacity-5"><Heart size={60}/></div>
-                <div className="absolute bottom-10 left-10 text-white opacity-5"><Swords size={50}/></div>
-                <div className="absolute bottom-1/4 right-1/4 text-white opacity-5"><Trophy size={40}/></div>
-            </StoryBackground>
+
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
                 {/* Header */}
-                <motion.div variants={itemVariants} className="w-full flex flex-col justify-start items-center px-4 mb-4 z-10 -mt-10">
-                    <div className="flex items-center justify-center w-full mb-1">
-                        <div className="bg-white rounded-full shadow-lg mr-3">
-                            <img
-                                src={data.avatarUrl}
-                                alt={data.username}
-                                className="w-14 h-14 rounded-full object-cover border-4 border-[#81b64c]"
-                            />
-                        </div>
-                        <h2 className="text-2xl font-black text-white drop-shadow-md leading-none">Your Streak<br/>Summary</h2>
+                <motion.div variants={itemVariants} className="w-full flex justify-start items-center px-4 mb-6 z-10">
+                    <div className="w-20 h-20 bg-white rounded-full shadow-lg mr-3 flex-shrink-0">
+                        <img
+                            src={data.avatarUrl}
+                            alt={data.username}
+                            className="w-20 h-20 rounded-full object-cover border-4 border-[#81b64c]"
+                        />
                     </div>
-                    <p className="text-[#989795] font-bold text-xs uppercase tracking-widest mt-1">Consistency Analysis</p>
+                    <h2 className="text-2xl font-bold text-white drop-shadow-md">
+                        Your Streak Summary
+                    </h2>
                 </motion.div>
 
-                <div className="w-full px-1 flex flex-col gap-3 z-10">
-                    {/* DAILY STREAK */}
-                    <motion.div variants={itemVariants} className="w-full bg-[#eab308] rounded-xl p-1 shadow-lg">
-                        <div className="bg-[#262421] rounded-lg p-3 flex items-center justify-between">
-                            <div className="overflow-hidden">
-                                <div className="flex items-center gap-3 mb-1">
-                                    <AnimatedDay />
-                                    {/* Changed truncate to whitespace-nowrap to ensure title is fully visible */}
-                                    <span className="text-[#eab308] font-black text-sm uppercase tracking-wider whitespace-nowrap">Daily Streak</span>
-                                </div>
-                                <div className="text-white text-[10px] opacity-70 font-medium pl-1 truncate">Days Played in a Row</div>
-                            </div>
-                            <div className="text-4xl font-black text-white tabular-nums tracking-tight drop-shadow-md">
-                                {data.longestDailyStreak}
-                            </div>
-                        </div>
-                    </motion.div>
-
+                <div className="w-full px-6 flex flex-col gap-3 z-10">
                     {/* WIN STREAK */}
-                    <motion.div variants={itemVariants} className="w-full bg-[#81b64c] rounded-xl p-1 shadow-lg">
-                        <div className="bg-[#262421] rounded-lg p-3 flex items-center justify-between">
-                            <div className="overflow-hidden">
-                                <div className="flex items-center gap-3 mb-1">
-                                    <AnimatedFire />
-                                    {/* Changed truncate to whitespace-nowrap */}
-                                    <span className="text-[#81b64c] font-black text-sm uppercase tracking-wider whitespace-nowrap">Win Streak</span>
-                                </div>
-                                <div className="text-white text-[10px] opacity-70 font-medium pl-1 truncate">Longest Winning Run</div>
-                            </div>
-                            <div className="text-4xl font-black text-white tabular-nums tracking-tight drop-shadow-md">
+                    <motion.div variants={itemVariants} className="w-full bg-[#262421] rounded-xl p-4 border-2 border-[#3e3c39] shadow-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Flame className="text-[#81b64c]" size={24} fill="#81b64c" strokeWidth={2} />
+                            <span className="text-white font-black text-base uppercase tracking-wider">Win Streak</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center py-2">
+                            <div className="text-6xl font-black text-[#81b64c] leading-none drop-shadow-xl">
                                 {data.longestWinStreak}
                             </div>
+                            <span className="text-[#989795] text-xs uppercase tracking-wider mt-2">Games Won</span>
                         </div>
                     </motion.div>
 
                     {/* LOSS STREAK */}
-                    <motion.div variants={itemVariants} className="w-full bg-[#ca3431] rounded-xl p-1 shadow-lg">
-                        <div className="bg-[#262421] rounded-lg p-3 flex items-center justify-between">
-                            <div className="overflow-hidden">
-                                <div className="flex items-center gap-3 mb-1">
-                                    <AnimatedIce />
-                                    {/* Changed truncate to whitespace-nowrap */}
-                                    <span className="text-[#ca3431] font-black text-sm uppercase tracking-wider whitespace-nowrap">Loss Streak</span>
-                                </div>
-                                <div className="text-white text-[10px] opacity-70 font-medium pl-1 truncate">Longest losses</div>
-                            </div>
-                            <div className="text-4xl font-black text-white tabular-nums tracking-tight drop-shadow-md">
+                    <motion.div variants={itemVariants} className="w-full bg-[#262421] rounded-xl p-4 border-2 border-[#3e3c39] shadow-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Flag className="text-[#ca3431]" size={24} strokeWidth={2} />
+                            <span className="text-white font-black text-base uppercase tracking-wider">Loss Streak</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center py-2">
+                            <div className="text-6xl font-black text-[#ca3431] leading-none drop-shadow-xl">
                                 {data.longestLossStreak}
                             </div>
+                            <span className="text-[#989795] text-xs uppercase tracking-wider mt-2">Games Lost</span>
                         </div>
                     </motion.div>
 
