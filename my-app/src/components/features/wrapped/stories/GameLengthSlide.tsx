@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { Hourglass, ExternalLink } from 'lucide-react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
 import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
@@ -19,9 +18,7 @@ export default function GameLengthSlide() {
 
     return (
         <StoryCard id="slide-length" className={CONTAINERS.slideCard}>
-            <StoryBackground>
-                <div className="absolute top-10 left-10 text-white opacity-5"><Hourglass size={60} /></div>
-            </StoryBackground>
+
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 

@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Users, Heart, Swords, Trophy, Crown } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
 import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
@@ -108,11 +107,7 @@ export default function FriendsSlide() {
     return (
         <StoryCard id="slide-friends" className={CONTAINERS.slideCard}>
 
-            <StoryBackground>
-                <div className="absolute top-10 right-10 text-white opacity-5"><Heart size={60} /></div>
-                <div className="absolute bottom-10 left-10 text-white opacity-5"><Swords size={50} /></div>
-                <div className="absolute bottom-1/4 right-1/4 text-white opacity-5"><Trophy size={40} /></div>
-            </StoryBackground>
+
 
             <motion.div
                 className={CONTAINERS.slideContainer}

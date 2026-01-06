@@ -100,9 +100,7 @@ export function analyzeGeneral(games: ChessGame[], username: string) {
         longestWinStreak: streakTracker.getLongestWinStreak(),
         longestLossStreak: streakTracker.getLongestLossStreak(),
         longestDailyStreak: timeStats.longestDailyStreak,
-        winMethods: gameStats.winMethods,
-        lossMethods: gameStats.lossMethods,
-        drawMethods: gameStats.drawMethods,
+
         longestGame: highlights.longestGame,
         biggestUpset: highlights.biggestUpset,
         fastestWin: highlights.fastestWin,

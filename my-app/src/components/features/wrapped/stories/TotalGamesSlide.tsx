@@ -4,7 +4,6 @@ import { Clock, Rocket, Zap, Swords, Hourglass } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
 import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
@@ -88,10 +87,7 @@ export default function TotalGamesSlide() {
 
     return (
         <StoryCard id="slide-games" className={CONTAINERS.slideCard}>
-            <StoryBackground>
-                <div className="absolute top-10 left-10 text-white opacity-5 animate-float"><Swords size={60} /></div>
-                <div className="absolute bottom-10 right-10 text-white opacity-5 animate-float" style={{ animationDelay: '3s' }}><Zap size={50} /></div>
-            </StoryBackground>
+
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 

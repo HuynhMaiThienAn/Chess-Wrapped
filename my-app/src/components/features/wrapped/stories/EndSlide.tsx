@@ -4,32 +4,12 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { Github, MessageSquare, Heart, Trophy, Zap, Target, Home, Instagram, Coffee, Star } from 'lucide-react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
 import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
 
 const defaultAvatar = 'https://www.chess.com/bundles/web/images/user-image.svg';
 
-// Floating Animation for background elements
-const FloatingIcon = ({ children, delay, x, y, color }: { children: React.ReactNode, delay: number, x: number, y: number, color?: string }) => (
-    <motion.div
-        className={`absolute opacity-10 pointer-events-none ${color || 'text-white'}`}
-        initial={{ x, y }}
-        animate={{
-            y: [y, y - 15, y],
-            rotate: [0, 5, -5, 0]
-        }}
-        transition={{
-            duration: 5,
-            delay,
-            repeat: Infinity,
-            ease: "easeInOut"
-        }}
-    >
-        {children}
-    </motion.div>
-);
 
 export default function EndSlide({ onReset }: { onReset: () => void }) {
     const router = useRouter();
@@ -38,16 +18,7 @@ export default function EndSlide({ onReset }: { onReset: () => void }) {
     return (
         <StoryCard id="slide-end" className={CONTAINERS.slideCard}>
 
-            <StoryBackground>
-                {/* Dynamic Background */}
-                <FloatingIcon x={40} y={80} delay={0}><Trophy size={60} /></FloatingIcon>
-                <FloatingIcon x={280} y={150} delay={1}><Heart size={50} /></FloatingIcon>
-                <FloatingIcon x={-20} y={400} delay={2} color="text-[#ffc800]"><Zap size={40} fill="currentColor" /></FloatingIcon>
-                <FloatingIcon x={250} y={500} delay={1.5}><Target size={45} /></FloatingIcon>
 
-                {/* Gradient Glow */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#ffc800] blur-[120px] opacity-10 rounded-full" />
-            </StoryBackground>
 
             <motion.div
                 className={CONTAINERS.slideContainer}
@@ -134,9 +105,9 @@ export default function EndSlide({ onReset }: { onReset: () => void }) {
                             rel="noopener noreferrer"
                             className="w-full py-3 bg-[#262421] hover:bg-[#302e2b] text-[#989795] hover:text-white font-bold text-xs rounded-xl border-2 border-[#3e3c39] flex items-center justify-center gap-2 transition-all hover:border-[#ffc800] group"
                         >
-                            <Github size={18} className="group-hover:text-white transition-colors"/>
+                            <Github size={18} className="group-hover:text-white transition-colors" />
                             <span>Star on GitHub</span>
-                            <Star size={14} className="text-[#ffc800] fill-[#ffc800] group-hover:scale-110 transition-transform"/>
+                            <Star size={14} className="text-[#ffc800] fill-[#ffc800] group-hover:scale-110 transition-transform" />
                         </a>
                     </motion.div>
 

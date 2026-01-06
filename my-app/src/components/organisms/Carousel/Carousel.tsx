@@ -15,9 +15,7 @@ import WorstOpeningSlide from '@/components/features/wrapped/stories/WorstOpenin
 import EndSlide from '@/components/features/wrapped/stories/EndSlide';
 import TopOpeningSlide from '@/components/features/wrapped/stories/topOpenings/TopOpeningSlide';
 import FriendsSlide from '@/components/features/wrapped/stories/friends/FriendsSlide';
-import WinSlide from '@/components/features/wrapped/stories/WinSlide';
-import LossSlide from '@/components/features/wrapped/stories/LossSlide';
-import DrawSlide from '@/components/features/wrapped/stories/DrawSlide';
+
 import StreakSlide from "@/components/features/wrapped/stories/StreakSlide";
 import GameLengthSlide from "@/components/features/wrapped/stories/GameLengthSlide";
 
@@ -45,9 +43,7 @@ export default function Carousel() {
         { id: 'welcome', component: <WelcomeSlide /> },
         { id: 'games', component: <TotalGamesSlide /> },
         { id: 'elo', component: <EloGraphSlide /> },
-        { id: 'wins_by', component: <WinSlide />, condition: () => data.wins > 0 },
-        { id: 'loss_by', component: <LossSlide />, condition: () => data.losses > 0 },
-        { id: 'draw_by', component: <DrawSlide />, condition: () => data.draws > 0 },
+
         { id: 'streak', component: <StreakSlide /> },
         { id: 'op_top', component: <TopOpeningSlide /> },
         { id: 'op_worst', component: <WorstOpeningSlide />, condition: () => (data.worstOpeningsWhite.length > 0 || data.worstOpeningsBlack.length > 0) },

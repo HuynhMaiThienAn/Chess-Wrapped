@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { Crown, Swords, Skull, ExternalLink } from 'lucide-react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
 import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
@@ -22,12 +21,7 @@ export default function ImpressiveMatchesSlide() {
     return (
         <StoryCard id="slide-impressive" className={CONTAINERS.slideCard}>
 
-            {/* Background Layer */}
-            <StoryBackground>
-                <div className="absolute top-10 right-10 text-white opacity-5"><Swords size={80} /></div>
-                <div className="absolute bottom-20 left-10 text-white opacity-5"><Skull size={60} /></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-[0.03] scale-150"><Crown size={200} /></div>
-            </StoryBackground>
+
 
             <motion.div
                 className={CONTAINERS.slideContainer}

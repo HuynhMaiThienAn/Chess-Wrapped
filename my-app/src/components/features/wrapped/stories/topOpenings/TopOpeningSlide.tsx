@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Swords, Target } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
 import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
@@ -64,10 +63,7 @@ export default function TopOpeningSlide() {
 
     return (
         <StoryCard id="slide-top-openings" className={CONTAINERS.slideCard}>
-            <StoryBackground>
-                <div className="absolute top-10 left-10 text-white opacity-5"><Swords size={50} /></div>
-                <div className="absolute bottom-10 right-10 text-white opacity-5"><Target size={40} /></div>
-            </StoryBackground>
+
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 

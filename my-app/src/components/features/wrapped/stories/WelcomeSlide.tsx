@@ -7,7 +7,6 @@ import StoryCard from '@/components/ui/Card/StoryCard';
 import { itemVariants, containerVariants } from '@/components/shared/animations';
 import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 
 // Helper for AutoFit Text (Kept as is, it's good logic)
 const AutoFitText = ({ text }: { text: string }) => {
@@ -47,25 +46,6 @@ const AutoFitText = ({ text }: { text: string }) => {
     );
 };
 
-// Animated Floating Icon Component
-const FloatingIcon = ({ children, delay, x, y }: { children: React.ReactNode, delay: number, x: number, y: number }) => (
-    <motion.div
-        className="absolute opacity-10 text-white pointer-events-none"
-        initial={{ x, y }}
-        animate={{
-            y: [y, y - 20, y],
-            rotate: [0, 5, -5, 0]
-        }}
-        transition={{
-            duration: 4,
-            delay,
-            repeat: Infinity,
-            ease: "easeInOut"
-        }}
-    >
-        {children}
-    </motion.div>
-);
 
 export default function WelcomeSlide() {
     const { stats: data } = useChessStats();
@@ -76,16 +56,7 @@ export default function WelcomeSlide() {
     return (
         <StoryCard id="slide-welcome" className={CONTAINERS.slideCard}>
 
-            <StoryBackground>
-                {/* Dynamic Floating Background Elements */}
-                <FloatingIcon x={40} y={80} delay={0}><Crown size={80} /></FloatingIcon>
-                <FloatingIcon x={280} y={150} delay={1}><Trophy size={60} /></FloatingIcon>
-                <FloatingIcon x={-20} y={400} delay={2}><Star size={50} /></FloatingIcon>
-                <FloatingIcon x={250} y={500} delay={1.5}><Sparkles size={70} /></FloatingIcon>
 
-                {/* Large Background Gradient Blob */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#81b64c] blur-[100px] opacity-20 rounded-full" />
-            </StoryBackground>
 
             <motion.div
                 className={CONTAINERS.slideContainer}
