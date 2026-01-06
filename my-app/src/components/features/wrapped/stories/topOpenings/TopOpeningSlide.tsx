@@ -1,30 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Swords, Castle, Target } from 'lucide-react';
-import { useRef, useEffect, useState } from 'react'; // Added hooks
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from '../shared';
+import { Swords, Target } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
+import SlideHeader from '../shared/SlideHeader';
 
-// Colors for the bars
-const COLORS = ['#81b64c', '#ffc800', '#ebecd0', '#ca3431', '#7c7b79', '#3e3c39'];
-
-const getOpeningComment = (openingName: string) => {
-    const name = openingName.toLowerCase();
-
-    if (name.includes('sicilian')) return "Aggressive play style >:)";
-    if (name.includes('london')) return "PLs play Queen Gambit instead (me see London me resign)";
-    if (name.includes('caro')) return "Did you sac a rook yet? :)";
-    if (name.includes('french')) return "You love counter attack, don't u?";
-    if (name.includes('italian')) return "You love theory moves :>";
-    if (name.includes('king\'s indian')) return "You love solid position, don't u?";
-    if (name.includes('scandinavian')) return "me see pawn me take :D";
-
-    return "A unique style that only u played :D";
-};
-
-// 👇 1. New Helper Component: Auto-Scales text to fit width
+// Auto-Scales text to fit width
 const AutoFitText = ({ text }: { text: string }) => {
     const textRef = useRef<HTMLSpanElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -36,9 +22,7 @@ const AutoFitText = ({ text }: { text: string }) => {
             const txt = textRef.current;
             if (!container || !txt) return;
 
-            // Reset scale to measure natural size
             txt.style.transform = 'scale(1)';
-
             const containerWidth = container.clientWidth;
             const textWidth = txt.scrollWidth;
 
@@ -49,7 +33,6 @@ const AutoFitText = ({ text }: { text: string }) => {
             }
         };
 
-        // Run initially and on resize
         resizeText();
         window.addEventListener('resize', resizeText);
         return () => window.removeEventListener('resize', resizeText);
@@ -71,25 +54,13 @@ const AutoFitText = ({ text }: { text: string }) => {
 export default function TopOpeningSlide() {
     const { stats: data } = useChessStats();
 
-    // 1. Merge & Sort
     const allOpenings = [
         ...data.topOpeningsWhite,
         ...data.topOpeningsBlack
     ].sort((a, b) => b.count - a.count);
 
-    // 2. Prepare Data
-    const top5 = allOpenings.slice(0, 5);
-    const totalGames = data.totalGames || 1;
-
-    const chartData = top5.map(op => ({
-        name: op.name,
-        value: op.count,
-        percentOfTotal: (op.count / totalGames) * 100
-    }));
-
-    const topOpeningName = top5.length > 0 ? top5[0].name : "Unknown";
-
-    const maxVal = chartData.length > 0 ? chartData[0].value : 1;
+    const top4 = allOpenings.slice(0, 4);
+    const totalGames = top4.reduce((sum, op) => sum + op.count, 0);
 
     return (
         <StoryCard id="slide-top-openings" className={CONTAINERS.slideCard}>
@@ -100,68 +71,78 @@ export default function TopOpeningSlide() {
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
-                {/* 1. Header */}
-                <motion.div variants={itemVariants} className="w-full flex justify-start items-center px-4 mb-4 z-10">
-                    <div className="bg-white rounded-full shadow-lg mr-3">
-                        <img
-                            src={data.avatarUrl}
-                            alt={data.username}
-                            className="w-14 h-12 rounded-full object-cover border-4 border-[#81b64c]"
-                        />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white drop-shadow-md">
-                        Favorite Openings
-                    </h2>
-                </motion.div>
+                <SlideHeader
+                    avatarUrl={data.avatarUrl}
+                    username={data.username}
+                    title="Favorite Openings"
+                    subtitle={`${totalGames} games played`}
+                />
 
-                {/* 2. Horizontal Bar Graph */}
                 <motion.div
                     variants={itemVariants}
-                    className="w-full px-1 flex flex-col gap-4 z-10 mb-2 overflow-hidden max-h-[350px]"
+                    className={`${CONTAINERS.slideContent} flex flex-col gap-5 mb-2 overflow-hidden max-h-[400px]`}
                 >
-                    {chartData.map((item, idx) => {
-                        // Calculate width relative to your #1 opening
-                        let relativeWidth = (item.value / maxVal) * 100;
-                        if (relativeWidth > 100) relativeWidth = 100;
+                    {top4.map((item, idx) => {
+                        const total = item.count;
+                        const wins = Math.round((item.winRate / 100) * total);
+                        const draws = Math.round((item.drawRate / 100) * total);
+                        const losses = Math.round((item.lossRate / 100) * total);
 
                         return (
                             <div key={idx} className="w-full">
-                                {/* Label Row */}
-                                <div className="flex justify-between items-end mb-1 w-full">
+                                <div className="flex justify-between items-end mb-1.5 w-full">
                                     <div className="flex-1 min-w-0 mr-2">
                                         <AutoFitText text={item.name} />
                                     </div>
-
-                                    <span className="text-[#989795] text-[10px] font-mono whitespace-nowrap shrink-0">
-                                        {item.value} <span className="opacity-50">({item.percentOfTotal.toFixed(1)}%)</span>
-                                    </span>
                                 </div>
 
-                                {/* Bar Container */}
-                                <div className="w-full h-3 bg-[#262421] rounded-full overflow-hidden border border-[#3e3c39]">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${relativeWidth}%` }}
-                                        transition={{ duration: 1, delay: 0.2 + (idx * 0.1), ease: "easeOut" }}
-                                        className="h-full rounded-full"
-                                        style={{ backgroundColor: COLORS[idx % COLORS.length] }}
-                                    />
+                                <div className="flex justify-between items-center mb-1 text-[10px] font-bold">
+                                    <span className="text-[#81b64c]">{item.winRate}% WON</span>
+                                    <span className="text-[#989795]">{item.drawRate}% DRAWN</span>
+                                    <span className="text-[#ca3431]">{item.lossRate}% LOST</span>
+                                </div>
+
+                                <div className="flex justify-between items-center mb-1 text-[10px] font-mono text-[#989795]">
+                                    <span>{wins} won</span>
+                                    <span>{draws} drawn</span>
+                                    <span>{losses} lost</span>
+                                </div>
+
+                                <div className="w-full h-4 bg-[#262421] rounded-lg overflow-hidden border-2 border-[#3e3c39] flex">
+                                    {item.winRate > 0 && (
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${item.winRate}%` }}
+                                            transition={{ duration: 1, delay: 0.2 + (idx * 0.1), ease: "easeOut" }}
+                                            className="h-full bg-[#81b64c]"
+                                        />
+                                    )}
+                                    {item.drawRate > 0 && (
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${item.drawRate}%` }}
+                                            transition={{ duration: 1, delay: 0.3 + (idx * 0.1), ease: "easeOut" }}
+                                            className="h-full bg-[#989795]"
+                                        />
+                                    )}
+                                    {item.lossRate > 0 && (
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${item.lossRate}%` }}
+                                            transition={{ duration: 1, delay: 0.4 + (idx * 0.1), ease: "easeOut" }}
+                                            className="h-full bg-[#ca3431]"
+                                        />
+                                    )}
                                 </div>
                             </div>
                         );
                     })}
 
-                    {chartData.length === 0 && (
+                    {top4.length === 0 && (
                         <div className="text-center text-[#989795] italic py-10">
                             No opening data found.
                         </div>
                     )}
-                </motion.div>
-
-                <motion.div variants={itemVariants} className="z-10 px-4 mb-2 mt-3">
-                    <div className={TYPOGRAPHY.comment}>
-                        "{getOpeningComment(topOpeningName)}"
-                    </div>
                 </motion.div>
 
             </motion.div>

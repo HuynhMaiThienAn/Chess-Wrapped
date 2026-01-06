@@ -4,8 +4,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, ArrowUp, ArrowDown, Minus, Crown } from 'lucide-react';
 import { LineChart, Line, Tooltip, ResponsiveContainer, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
 
 // Helper for Peak Comment
@@ -223,9 +225,9 @@ export default function EloGraphSlide() {
                 <motion.div variants={itemVariants} className="w-full px-6 z-10">
                     <div
                         className="bg-[#262421] border-2 border-[#ffc800] rounded-2xl p-4 flex items-center gap-4 shadow-[0_4px_0_#b38b00] relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-full bg-white/5 pointer-events-none"/>
+                        <div className="absolute top-0 left-0 w-full h-full bg-white/5 pointer-events-none" />
                         <div className="bg-[#ffc800] p-3 rounded-xl text-[#302e2b]">
-                            <Crown size={28} fill="currentColor"/>
+                            <Crown size={28} fill="currentColor" />
                         </div>
                         <div className="flex flex-col text-left">
                             <span className="text-[#989795] font-bold text-[10px] uppercase tracking-widest">

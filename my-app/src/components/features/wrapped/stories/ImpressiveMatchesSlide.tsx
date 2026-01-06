@@ -1,17 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {Crown, Swords, Skull, ExternalLink, ChessKingIcon} from 'lucide-react';
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryHeader, StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
+import { Crown, Swords, Skull, ExternalLink } from 'lucide-react';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
+import SlideHeader from './shared/SlideHeader';
 
 const defaultAvatar = 'https://www.chess.com/bundles/web/images/user-image.svg';
 
 export default function ImpressiveMatchesSlide() {
     const { stats: data } = useChessStats();
 
-    // Get Top 3
+    // Get Top 3 impressive matches
     const topMatches = data.impressiveMatches?.slice(0, 3) || [];
 
     if (topMatches.length === 0) return null;
@@ -32,28 +35,25 @@ export default function ImpressiveMatchesSlide() {
                 initial="hidden"
                 animate="visible"
             >
-                {/* 1. Header */}
-                <StoryHeader
-                    icon={<ChessKingIcon />}
-                    iconColor="text-[#ffc800]"
+                <SlideHeader
+                    avatarUrl={data.avatarUrl}
+                    username={data.username}
                     title="Impressive Matches"
+                    subtitle="Your greatest victories"
                 />
 
-                {/* 2. SCROLLABLE LIST OF 3 MATCHES */}
+                {/* SCROLLABLE LIST OF MATCHES */}
                 <motion.div
                     variants={itemVariants}
-                    className="w-full px-4 flex flex-col gap-4 z-10 overflow-y-auto max-h-[420px] custom-scrollbar pb-4"
+                    className={`${CONTAINERS.slideContent} flex flex-col gap-4 overflow-y-auto max-h-[420px] custom-scrollbar pb-4`}
                 >
                     {topMatches.map((match, idx) => {
                         // Calculate user's Elo at that time
                         const userMatchElo = match.opponentElo - match.eloGap;
 
                         return (
-                            <motion.div
+                            <div
                                 key={idx}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.2 }}
                                 className="w-full bg-[#262421] border-2 border-[#3e3c39] rounded-2xl p-3 flex flex-col items-center shadow-lg relative overflow-hidden group hover:border-[#81b64c] transition-colors"
                             >
                                 {/* Splatter Effect */}
@@ -114,7 +114,7 @@ export default function ImpressiveMatchesSlide() {
                                     </div>
 
                                 </div>
-                            </motion.div>
+                            </div>
                         );
                     })}
                 </motion.div>

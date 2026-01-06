@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion';
 import { Crown, Trophy, Sparkles, Star, Calendar, ChevronRight } from 'lucide-react';
 import { useRef, useEffect } from 'react';
-import StoryCard from '@/components/ui/StoryCard';
-import { itemVariants, containerVariants } from './shared/animations';
-import { CONTAINERS, TYPOGRAPHY } from './shared/styles';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { itemVariants, containerVariants } from '@/components/shared/animations';
+import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
-import { StoryBackground } from './shared';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 
 // Helper for AutoFit Text (Kept as is, it's good logic)
 const AutoFitText = ({ text }: { text: string }) => {
@@ -103,13 +103,6 @@ export default function WelcomeSlide() {
 
                 {/* 2. Avatar Area */}
                 <motion.div variants={itemVariants} className="relative mb-8">
-                    {/* Pulsing Glow Behind Avatar */}
-                    <motion.div
-                        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.2, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute inset-0 bg-white blur-xl rounded-full"
-                    />
-
                     <div className="relative p-2 bg-white rounded-full shadow-2xl rotate-3">
                         <img
                             src={data.avatarUrl}

@@ -1,100 +1,64 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Hourglass, Zap, ExternalLink, Timer, Swords } from 'lucide-react';
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS } from './shared';
+import { Hourglass, ExternalLink } from 'lucide-react';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
+import SlideHeader from './shared/SlideHeader';
+
+const defaultAvatar = 'https://www.chess.com/bundles/web/images/user-image.svg';
 
 export default function GameLengthSlide() {
     const { stats: data } = useChessStats();
 
     // Safety check
-    if (!data.longestGame || !data.shortestGame) return null;
+    if (!data.longestGame) return null;
 
     return (
         <StoryCard id="slide-length" className={CONTAINERS.slideCard}>
             <StoryBackground>
                 <div className="absolute top-10 left-10 text-white opacity-5"><Hourglass size={60} /></div>
-                <div className="absolute bottom-10 right-10 text-white opacity-5"><Zap size={60} /></div>
             </StoryBackground>
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
-                {/* Header */}
-                <motion.div variants={itemVariants} className="w-full flex flex-col justify-start items-center px-4 mb-6 z-10">
-                    <div className="flex items-center justify-center w-full mb-1">
-                        <div className="bg-white rounded-full shadow-lg mr-3">
-                            <img
-                                src={data.avatarUrl}
-                                alt={data.username}
-                                className="w-14 h-14 rounded-full object-cover border-4 border-[#81b64c]"
-                            />
-                        </div>
-                        <h2 className="text-3xl font-black text-white drop-shadow-md leading-none">Interesting<br/>Games</h2>
+                <SlideHeader
+                    avatarUrl={data.avatarUrl}
+                    username={data.username}
+                    title="Longest Game"
+                    subtitle="Your greatest marathon battle"
+                />
+
+                <motion.div variants={itemVariants} className={`${CONTAINERS.slideContent} flex flex-col items-center gap-6`}>
+
+                    {/* Main Number - Moves */}
+                    <div className="flex flex-col items-center">
+                        <span className="text-8xl font-black text-white leading-none drop-shadow-xl">
+                            {data.longestGame.moves}
+                        </span>
+                        <span className="text-[#989795] font-bold text-sm uppercase tracking-widest mt-3">
+                            Moves
+                        </span>
                     </div>
-                    <p className="text-[#989795] font-bold text-xs uppercase tracking-widest mt-2">Game Length Analysis</p>
+
+                    {/* Result Box */}
+                    <div className="w-full max-w-xs bg-[#262421] border-2 border-[#3e3c39] rounded-xl p-4 flex flex-col items-center gap-2">
+                        <span className="text-[#989795] text-xs uppercase font-bold">How it ended</span>
+                        <span className="text-white text-lg font-black">{data.longestGame.result}</span>
+                        <a
+                            href={data.longestGame.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-md text-[9px] font-bold uppercase transition-colors mt-1"
+                        >
+                            View Game <ExternalLink size={10} />
+                        </a>
+                    </div>
+
                 </motion.div>
-
-                <div className="w-full px-6 flex flex-col gap-4 z-10">
-
-                    {/* 1. LONGEST GAME (Blue) */}
-                    <motion.div variants={itemVariants} className="w-full bg-[#3b82f6] rounded-xl p-1 shadow-lg transform rotate-[-1deg] hover:rotate-0 transition-transform duration-300">
-                        <div className="bg-[#262421] rounded-lg p-4">
-                            <div className="flex items-center gap-2 mb-3 border-b border-white/10 pb-2">
-                                <Hourglass className="text-[#3b82f6]" size={20} />
-                                <span className="text-[#3b82f6] font-black text-sm uppercase tracking-wider">Longest Game</span>
-                            </div>
-
-                            <div className="flex justify-between items-start mb-1">
-                                <div>
-                                    <div className="text-white text-4xl font-black tabular-nums">{data.longestGame.moves}</div>
-                                    <div className="text-[#989795] text-[10px] font-bold uppercase mt-1">Moves</div>
-                                </div>
-                                <div className="text-right flex flex-col items-end">
-                                    <div className="text-[#989795] text-[10px] uppercase font-bold mb-1">VS {data.longestGame.opponent}</div>
-                                    <a
-                                        href={data.longestGame.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="inline-flex items-center gap-1 bg-[#3b82f6]/20 hover:bg-[#3b82f6]/30 text-[#3b82f6] px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-colors"
-                                    >
-                                        View Game <ExternalLink size={10} />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* 2. SHORTEST GAME (Yellow) */}
-                    <motion.div variants={itemVariants} className="w-full bg-[#eab308] rounded-xl p-1 shadow-lg transform rotate-[1deg] hover:rotate-0 transition-transform duration-300">
-                        <div className="bg-[#262421] rounded-lg p-4">
-                            <div className="flex items-center gap-2 mb-3 border-b border-white/10 pb-2">
-                                <Zap className="text-[#eab308]" size={20} fill="#eab308" />
-                                <span className="text-[#eab308] font-black text-sm uppercase tracking-wider">Shortest Game</span>
-                            </div>
-
-                            <div className="flex justify-between items-start mb-1">
-                                <div>
-                                    <div className="text-white text-4xl font-black tabular-nums">{data.shortestGame.moves}</div>
-                                    <div className="text-[#989795] text-[10px] font-bold uppercase mt-1">Moves</div>
-                                </div>
-                                <div className="text-right flex flex-col items-end">
-                                    <div className="text-[#989795] text-[10px] uppercase font-bold mb-1">VS {data.shortestGame.opponent}</div>
-                                    <a
-                                        href={data.shortestGame.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="inline-flex items-center gap-1 bg-[#eab308]/20 hover:bg-[#eab308]/30 text-[#eab308] px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-colors"
-                                    >
-                                        View Game <ExternalLink size={10} />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                </div>
 
             </motion.div>
         </StoryCard>

@@ -3,8 +3,10 @@
 import { Clock, Rocket, Zap, Swords, Hourglass } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
-import StoryCard from '@/components/ui/StoryCard';
-import { StoryBackground, containerVariants, itemVariants, CONTAINERS, TYPOGRAPHY } from './shared';
+import StoryCard from '@/components/ui/Card/StoryCard';
+import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
+import { containerVariants, itemVariants } from '@/components/shared/animations';
+import { CONTAINERS, TYPOGRAPHY } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
 
 // 1. Faster CountUp Component
@@ -95,11 +97,11 @@ export default function TotalGamesSlide() {
 
                 {/* Header */}
                 <motion.div variants={itemVariants} className="w-full flex justify-start items-center px-4 mb-2 z-10">
-                    <div className=" bg-white rounded-full shadow-lg mr-3">
+                    <div className="w-20 h-20 bg-white rounded-full shadow-lg mr-3 flex-shrink-0">
                         <img
                             src={data.avatarUrl}
                             alt={data.username}
-                            className="w-20 h-15 rounded-full object-cover border-4 border-[#81b64c]"
+                            className="w-20 h-20 rounded-full object-cover border-4 border-[#81b64c]"
                         />
                     </div>
                     <h2 className="text-2xl font-bold text-white drop-shadow-md">

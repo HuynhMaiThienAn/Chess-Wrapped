@@ -1,11 +1,12 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { generateWrappedStats } from '@/lib/chess';
-import Carousel from '@/components/features/wrapped/Carousel';
-import Button from '@/components/ui/Button';
-import Link from 'next/link';
-// 👇 Import Provider
+import Carousel from '@/components/organisms/Carousel';
 import { ChessProvider } from '@/context/ChessContext';
+import { NoGamesState } from '@/components/wrapped/no-games-state';
+import { generateWrappedMetadata } from '@/lib/utils/metadata-utils';
+import { validateAndSanitizeUsername } from '@/lib/utils/security-utils';
+import { logError } from '@/lib/utils/env-utils';
 
 interface PageProps {
     params: Promise<{ username: string }>;
@@ -13,44 +14,37 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const resolvedParams = await params;
-    const username = decodeURIComponent(resolvedParams.username);
-    return {
-        title: `${username}'s 2025 Chess Wrapped`,
-        description: `Check out ${username}'s chess stats for the year 2025!`,
-    };
+    const rawUsername = decodeURIComponent(resolvedParams.username);
+
+    // Use centralized metadata generator with sanitization
+    return generateWrappedMetadata(rawUsername);
 }
 
 export default async function UserWrappedPage({ params }: PageProps) {
     const resolvedParams = await params;
-    const username = decodeURIComponent(resolvedParams.username);
+    const rawUsername = decodeURIComponent(resolvedParams.username);
 
     try {
+        // Sanitize and validate username
+        const username = validateAndSanitizeUsername(rawUsername);
+
+        // Generate stats
         const stats = await generateWrappedStats(username);
 
+        // Check for empty stats
         if (!stats || stats.totalGames === 0) {
-            return (
-                <div className="min-h-screen flex flex-col items-center justify-center bg-[#302e2b] text-white p-4 text-center">
-                    <h1 className="text-3xl font-black text-[#81b64c] mb-4">No Games Found</h1>
-                    <p className="text-[#989795] mb-8 max-w-md">
-                        We couldn't find any games for <strong>{username}</strong> in 2025.
-                        Are you sure the username is correct and they have played this year?
-                    </p>
-                    <Link href="/">
-                        <Button>Try Another Username</Button>
-                    </Link>
-                </div>
-            );
+            return <NoGamesState username={username} />;
         }
 
+        // Success - show wrapped
         return (
-            // 👇 WRAPPED IN PROVIDER
             <ChessProvider stats={stats}>
                 <Carousel />
             </ChessProvider>
         );
-
     } catch (error) {
-        console.error("Error generating wrapped:", error);
+        // Production-safe error logging
+        logError('Error generating wrapped', error);
         notFound();
     }
 }

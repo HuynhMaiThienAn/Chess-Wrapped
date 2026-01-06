@@ -31,20 +31,12 @@ export interface GameStats {
         result: string;
         date: string;
         url: string;
-    };
-    shortestGame?: {
-        opponent: string;
-        moves: number;
-        result: string;
-        date: string;
-        url: string;
+        pgn?: string;
     };
 
     longestWinStreak: number;
     longestLossStreak: number;
     longestDailyStreak: number;
-
-    checkmateByPiece: { piece: string; count: number }[];
 
     eloChange: {
         Blitz: number;
@@ -84,6 +76,8 @@ export interface OpeningStat {
     name: string;
     count: number;
     winRate: number;
+    drawRate: number;
+    lossRate: number;
     highestWinElo: number;
     pgn?: string;
 }

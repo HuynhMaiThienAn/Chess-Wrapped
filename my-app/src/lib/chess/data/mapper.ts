@@ -1,6 +1,7 @@
 import { User, ChessGame } from '@/types';
 import { RawProfileResponse, RawMonthlyGamesResponse } from './types';
-import { parseUsernameFromUrl, normalizeAvatar } from '../util';
+import { parseUsernameFromUrl } from '../utils/username-utils';
+import { normalizeAvatar } from '../utils/avatar-utils';
 
 export function mapProfileToDomain(username: string, raw: RawProfileResponse): User {
     return {
