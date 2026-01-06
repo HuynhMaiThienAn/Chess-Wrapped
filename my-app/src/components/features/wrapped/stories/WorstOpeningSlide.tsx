@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 import StoryCard from '@/components/ui/Card/StoryCard';
-import { StoryBackground } from '@/components/shared/layouts/StoryLayout';
 import { containerVariants, itemVariants } from '@/components/shared/animations';
 import { CONTAINERS } from '@/components/shared/styles';
 import { useChessStats } from '@/context/ChessContext';
@@ -68,10 +67,7 @@ export default function WorstOpeningSlide() {
 
     return (
         <StoryCard id="slide-worst" className={CONTAINERS.slideCard}>
-            <StoryBackground>
-                <div className="absolute top-10 right-10 text-red-500 opacity-5"><AlertTriangle size={60} /></div>
-                <div className="absolute bottom-10 left-10 text-red-500 opacity-5"><ShieldAlert size={50} /></div>
-            </StoryBackground>
+
 
             <motion.div className={CONTAINERS.slideContainer} variants={containerVariants} initial="hidden" animate="visible">
 
@@ -129,14 +125,12 @@ export default function WorstOpeningSlide() {
                                             className="h-full bg-[#989795]"
                                         />
                                     )}
-                                    {item.lossRate > 0 && (
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${item.lossRate}%` }}
-                                            transition={{ duration: 1, delay: 0.4 + (idx * 0.1), ease: "easeOut" }}
-                                            className="h-full bg-[#ca3431]"
-                                        />
-                                    )}
+                                    <motion.div
+                                        initial={{ flex: 0 }}
+                                        animate={{ flex: 1 }}
+                                        transition={{ duration: 1, delay: 0.4 + (idx * 0.1), ease: "easeOut" }}
+                                        className="h-full bg-[#ca3431]"
+                                    />
                                 </div>
                             </div>
                         );
