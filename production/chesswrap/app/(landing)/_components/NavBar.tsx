@@ -15,7 +15,7 @@ export function NavBar (){
                     Docs
                 </Link>
                 <Link href ="/">
-                    Star on Github
+                    Github
                 </Link>
             </nav>
         </header>
