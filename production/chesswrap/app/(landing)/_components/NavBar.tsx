@@ -9,16 +9,13 @@ export function NavBar (){
                     <BrandLogo/>
                 </Link>
                 <Link href ="/">
-                    Review
+                    About
                 </Link>
                 <Link href ="/">
-                    Leaderboard
+                    Docs
                 </Link>
                 <Link href ="/">
-                    Gallery
-                </Link>
-                <Link href ="/">
-                    About us
+                    Star on Github
                 </Link>
             </nav>
         </header>
