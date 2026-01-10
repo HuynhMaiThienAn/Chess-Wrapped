@@ -143,18 +143,18 @@
 
 @keyframes scroll-right {
   0% {
-    transform: translateX(0);
+    transform: translateX(-50%);
   }
 
   100% {
-    transform: translateX(50%);
+    transform: translateX(0);
   }
 }
 
 .animate-scroll-left {
-  animation: scroll-left 20s linear infinite;
+  animation: scroll-left 15s linear infinite;
 }
 
 .animate-scroll-right {
-  animation: scroll-right 20s linear infinite;
+  animation: scroll-right 15s linear infinite;
 }

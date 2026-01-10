@@ -9,23 +9,17 @@ interface InfiniteCarouselProps {
 export function InfiniteCarousel({ feedbackData, reverse = false }: InfiniteCarouselProps) {
     return (
         <div className="relative overflow-hidden">
-            <div
-                className={`flex gap-4 ${reverse ? 'animate-scroll-right' : 'animate-scroll-left'}`}
-            >
+            <div className={`flex gap-4 ${reverse ? 'animate-scroll-right' : 'animate-scroll-left'}`}>
                 {feedbackData.map((feedback, index) => (
-                    <div
-                        key={`first-${index}`}
-                        className="w-[300px] md:w-[350px] lg:w-[400px] flex-shrink-0"
-                    >
+                    <div key={`first-${index}`}
+                         className="w-[300px] md:w-[350px] lg:w-[400px] flex-shrink-0">
                         <ReviewCard {...feedback} />
                     </div>
                 ))}
 
                 {feedbackData.map((feedback, index) => (
-                    <div
-                        key={`second-${index}`}
-                        className="w-[300px] md:w-[350px] lg:w-[400px] flex-shrink-0"
-                    >
+                    <div key={`second-${index}`}
+                        className="w-[300px] md:w-[350px] lg:w-[400px] flex-shrink-0">
                         <ReviewCard {...feedback} />
                     </div>
                 ))}
