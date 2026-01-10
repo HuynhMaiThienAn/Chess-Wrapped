@@ -23,7 +23,7 @@ export function ReviewCard({ satisfyScore, feedback }: UserFeedback) {
             </CardHeader>
 
             <CardContent className="pt-1 pb-3">
-                <p className="text-xs lg:text-sm xl:text-L">
+                <p className="text-xl text-black">
                     "{feedback}"
                 </p>
             </CardContent>

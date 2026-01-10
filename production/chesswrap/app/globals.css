@@ -129,7 +129,12 @@
   .pause-animation:hover {
     animation-play-state: paused;
   }
+
+  .font-bubbly {
+    font-family: 'Fredoka', sans-serif;
+  }
 }
+
 
 @keyframes scroll-left {
   0% {

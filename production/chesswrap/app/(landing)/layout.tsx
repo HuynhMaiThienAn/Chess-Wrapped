@@ -1,12 +1,15 @@
-import {ReactNode} from "react";
-import {NavBar} from "@/app/(landing)/_components/NavBar";
+import { ReactNode } from "react";
+import { NavBar } from "@/app/(landing)/_components/NavBar";
 
-export default function HomePageLayout({children}: {children: ReactNode
+export default function HomePageLayout({ children }: {
+    children: ReactNode
 }) {
     return (
         <div>
             <NavBar />
-            {children}
+            <main>
+                {children}
+            </main>
         </div>
     )
 }
