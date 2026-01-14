@@ -26,7 +26,7 @@ export function ChessBackground() {
             <motion.div
                 animate={{ y: [-10, 10, -10], rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="absolute top-[10%] left-[10%] text-[#ffc800] drop-shadow-md z-0"
+                className="absolute top-[10%] left-[10%] text-[#ffc800] opacity-55 drop-shadow-md z-0"
             >
                 <ChessKing size={80} strokeWidth={3} />
             </motion.div>

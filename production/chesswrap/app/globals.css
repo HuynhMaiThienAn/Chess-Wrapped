@@ -131,7 +131,7 @@
   }
 
   .font-bubbly {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-fredoka), sans-serif;
   }
 }
 

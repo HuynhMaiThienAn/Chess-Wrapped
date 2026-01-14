@@ -1,4 +1,4 @@
-export const VIEWERS = 9500;
+export const VIEWERS = 10000;
 export const COUNTRIES = 180;
 export const STARS = 60;
 

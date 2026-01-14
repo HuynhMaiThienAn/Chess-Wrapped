@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { ChessKing } from 'lucide-react';
 import { ChessBackground } from '@/components/landing/chess-background';
 import { UsernameForm } from '@/components/landing/username-form';
@@ -78,7 +79,22 @@ export default function LandingPage() {
 
                 {/* Error Modal */}
                 <ErrorModal error={error} onClose={clearError} />
-            </div>
-        </>
-    );
+
+                {/* Demo Link */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="relative z-10 mt-8"
+                >
+                    <Link
+                        href="http://localhost:3001"
+                        target="_blank"
+                        className="text-white/80 hover:text-white font-bubbly font-semibold text-lg hover:underline transition-all flex items-center gap-2"
+                    >
+                        View Production Demo <span aria-hidden="true">→</span>
+                    </Link>
+                </motion.div>
+            </>
+            );
 }

@@ -1,7 +1,9 @@
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fredoka } from "next/font/google";
 import "./globals.css";
+import { NavBar } from "@/components/ui/NavBar";
+import { ChessBackground } from "@/components/ui/chess-background";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,17 +15,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "ChessWrap - Your 2025 Chess Journey Wrapped",
   description: "Discover your chess stats for 2025! Analyze your Chess.com and Lichess games with beautiful visualizations, track your progress, and share your chess journey.",
   keywords: ["chess", "chess.com", "lichess", "chess stats", "chess wrapped", "chess analytics", "chess year in review", "chess 2025"],
   authors: [{ name: "Ryan.H" }],
-  metadataBase: new URL('https://chesswrap.com'),
+  metadataBase: new URL('https://chesswrap.me'),
   openGraph: {
     title: "ChessWrap - Your 2025 Chess Journey Wrapped",
     description: "Discover your chess stats for 2025 with beautiful visualizations. Analyze your Chess.com and Lichess games.",
     type: "website",
-    url: "https://chesswrap.com",
+    url: "https://chesswrap.me",
     siteName: "ChessWrap",
     images: [
       {
@@ -54,12 +63,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
+
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -68,7 +73,7 @@ export default function RootLayout({
               "@type": "WebApplication",
               "name": "ChessWrap",
               "description": "Discover your chess stats for 2025! Analyze your Chess.com and Lichess games with beautiful visualizations.",
-              "url": "https://chesswrap.com",
+              "url": "https://chesswrap.me",
               "applicationCategory": "SportsApplication",
               "offers": {
                 "@type": "Offer",
@@ -82,10 +87,30 @@ export default function RootLayout({
             })
           }}
         />
+        <script
+          type="speculationrules"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              prerender: [
+                {
+                  source: "document",
+                  where: {
+                    href_matches: "/*",
+                  },
+                  eagerness: "moderate",
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} antialiased`}
       >
+        <div className="fixed inset-0 z-[-1] bg-[#81b64c]">
+          <ChessBackground />
+        </div>
+        <NavBar />
         {children}
       </body>
     </html>

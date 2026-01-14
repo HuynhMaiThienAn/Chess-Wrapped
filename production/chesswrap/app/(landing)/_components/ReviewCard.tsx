@@ -22,8 +22,8 @@ export function ReviewCard({ satisfyScore, feedback }: UserFeedback) {
                 </div>
             </CardHeader>
 
-            <CardContent className="pt-1 pb-3">
-                <p className="text-xl text-black">
+            <CardContent>
+                <p className="text-l text-black -mt-5">
                     "{feedback}"
                 </p>
             </CardContent>
